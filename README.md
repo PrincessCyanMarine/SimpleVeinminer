@@ -13,7 +13,7 @@ So, taking a page from Thanos' book, I did it myself
 
 This Is my first actual mod (I've made one for learning purposes before), so some feedback would be appreciated
 
-# Configs
+# Config
 Veinmining is usually quite OP so to balance it a bit, I made the exhaustion (how hungry the player gets) be based on the block's hardness
 
 So, veinming a bunch of obsidian makes you hungrier than veinmining the same amount of stone or dirt
@@ -35,5 +35,5 @@ If you have any suggestions (Not that there's a lot to do on a veinmining mod), 
 [THANOS_MEME]: https://raw.githubusercontent.com/PrincessCyanMarine/Simple-Veinminer/main/assets/fine_ill_do_it_myself.png
 [Mod menu]: https://www.curseforge.com/minecraft/mc-mods/modmenu
 [Cloth Config]: https://www.curseforge.com/minecraft/mc-mods/cloth-config
-[curseforge]: a
+[curseforge]: https://www.curseforge.com/minecraft/mc-mods/simple-veinminer
 [issues]: https://github.com/PrincessCyanMarine/Simple-Veinminer/issues
