@@ -5,7 +5,7 @@ I recently started playing with a few mods on 1.18.1
 
 It was pretty fun but I got way too used with veinmining on other modpacks
 
-So, I looked for a veinminer for 1.18.1 fabric and... Nothing (Well there's [VeinMiner4Bukkit](VeinMiner4Bukkit) and [Vein Mining Fabric](vein_mining_fabric) but neither do what I needed)
+So, I looked for a veinminer for 1.18.1 fabric and... Nothing (Well there's [VeinMiner4Bukkit](https://www.curseforge.com/minecraft/mc-mods/veinminer4bukkit) and [Vein Mining (Fabric)](https://www.curseforge.com/minecraft/mc-mods/vein-mining-fabric) but neither do what I needed)
 
 So, taking a page from Thanos' book, I did it myself
 
@@ -20,7 +20,7 @@ So, veinming a bunch of obsidian makes you hungrier than veinmining the same amo
 
 But I know everyone plays differently so the configs allow you to adjust exhaustion and durability usage
 
-I suggest using [Mod Menu](mod_menu) and [Cloth Config](cloth_config) for that, but both are optional
+I suggest using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) for that, but both are optional
 
 I suggest messing around with the configs a bit to find what fits you best
 
@@ -28,11 +28,4 @@ I suggest messing around with the configs a bit to find what fits you best
 You can add this to how many modpacks as you would like.
 
 # Bugs? Suggestions? Complaints?
-If you have any suggestions (Not that there's a lot to do on a veinmining mod), find any bugs, or have any complaints, feel free to leave a comment on [curseforge](curseforge) or [create an issue](issues)
-
-[VeinMiner4Bukkit]: https://www.curseforge.com/minecraft/mc-mods/veinminer4bukkit
-[vein_mining_fabric]: https://www.curseforge.com/minecraft/mc-mods/vein-mining-fabric
-[mod_menu]: https://www.curseforge.com/minecraft/mc-mods/modmenu
-[cloth_config]: https://www.curseforge.com/minecraft/mc-mods/cloth-config
-[curseforge]: https://www.curseforge.com/minecraft/mc-mods/simple-veinminer
-[issues]: https://github.com/PrincessCyanMarine/Simple-Veinminer/issues
+If you have any suggestions (Not that there's a lot to do on a veinmining mod), find any bugs, or have any complaints, feel free to leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues)
