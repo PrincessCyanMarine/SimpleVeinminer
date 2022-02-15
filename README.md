@@ -5,7 +5,7 @@ I recently started playing with a few mods on 1.18.1
 
 It was pretty fun but I got way too used with veinmining on other modpacks
 
-So, I looked for a veinminer for 1.18.1 fabric and... Nothing (Well there's [VeinMiner4Bukkit](VeinMiner4Bukkit) and [Vein Mining \(Fabric\)](Vein Mining Fabric) but neither do what I needed)
+So, I looked for a veinminer for 1.18.1 fabric and... Nothing (Well there's [VeinMiner4Bukkit](VeinMiner4Bukkit) and [Vein Mining Fabric](Vein Mining Fabric) but neither do what I needed)
 
 So, taking a page from Thanos' book, I did it myself
 
