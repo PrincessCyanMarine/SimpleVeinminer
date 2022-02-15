@@ -1,5 +1,4 @@
 # Cyan's Veinminer
- A Simple Veinminer for Fabric
 
 I recently started playing with a few mods on 1.18.1
 
