@@ -13,6 +13,11 @@ So, taking a page from Thanos' book, I did it myself
 
 This Is my first actual mod, so some feedback would be appreciated
 
+# Enchantments and multiplayer
+I haven't tested any modded enchantments (yet), but the vanilla ones seem work correctly when veinmining
+
+It should work on multiplayer, but I also didn't get to test that yet
+
 # Config
 Veinmining is usually quite OP so to balance it a bit, I made the exhaustion (how hungry the player gets) be based on the block's hardness
 
