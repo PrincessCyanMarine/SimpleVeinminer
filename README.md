@@ -22,15 +22,14 @@ Veinmining is usually quite OP so to balance it a bit, I made the exhaustion (ho
 
 So, veinming a bunch of obsidian makes you hungrier than veinmining the same amount of stone or dirt
 
-But I know everyone plays differently so the configs allow you to adjust exhaustion and durability usage
+But I know everyone plays differently so the configs allow you to adjust exhaustion, durability usage and the maximum amount of blocks that can be veinmined at once
 
 I suggest messing around with the configs a bit to find what fits you best
 
-The easiest way to do that is by using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) for that, but both are optional
-
+The easiest way to do that is by using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config), but both are optional
 
 # Modpacks
-You can add this to how many modpacks as you would like.
+You can add this to as many modpacks as you would like.
 
 # Bugs? Suggestions? Complaints?
 If you have any suggestions (Not that there's a lot to do on a veinmining mod), find any bugs, or have any complaints, feel free to leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues)
