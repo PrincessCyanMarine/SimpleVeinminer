@@ -32,7 +32,7 @@ If you have any suggestions (Not that there's a lot to do on a veinmining mod), 
 
 [VeinMiner4Bukkit]: https://www.curseforge.com/minecraft/mc-mods/veinminer4bukkit
 [Vein Mining Fabric]: https://www.curseforge.com/minecraft/mc-mods/vein-mining-fabric
-[THANOS_MEME]: https://raw.githubusercontent.com/PrincessCyanMarine/Simple-Veinminer/main/assets/fine_ill_do_it_myself.png
+[THANOS_MEME]: https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/assets/fine_ill_do_it_myself.png?raw=true
 [Mod menu]: https://www.curseforge.com/minecraft/mc-mods/modmenu
 [Cloth Config]: https://www.curseforge.com/minecraft/mc-mods/cloth-config
 [curseforge]: https://www.curseforge.com/minecraft/mc-mods/simple-veinminer
