@@ -66,9 +66,8 @@ public class BlockMixin {
         int veinMined = blocksToBreak.size() - 1;
         if (player.getMainHandStack().getItem() instanceof SwordItem) damageMultiplier *= swordMultiplier;
         if (consumeOnInstantBreak || block.getHardness() > 0) player.getMainHandStack().damage((int) (damageMultiplier * veinMined), player.getRandom(), (ServerPlayerEntity) player);
-        double totalExhausted = exhaustion * veinMined;
-        if (harderBlocksExhaustMore) totalExhausted *= (block.getHardness() * hardnessExhaustionMultiplier);
-        //SimpleVeinminer.LOGGER.info(totalExhausted + "");
+        double totalExhausted = (exhaustion + (harderBlocksExhaustMore ? (block.getHardness() * hardnessExhaustionMultiplier) : 0)) * veinMined;
+        SimpleVeinminer.LOGGER.info(totalExhausted + "");
         player.addExhaustion((float) totalExhausted);
     }
 }
