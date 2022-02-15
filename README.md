@@ -20,9 +20,10 @@ So, veinming a bunch of obsidian makes you hungrier than veinmining the same amo
 
 But I know everyone plays differently so the configs allow you to adjust exhaustion and durability usage
 
-I suggest using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) for that, but both are optional
-
 I suggest messing around with the configs a bit to find what fits you best
+
+The easiest way to do that is by using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config) for that, but both are optional
+
 
 # Modpacks
 You can add this to how many modpacks as you would like.
