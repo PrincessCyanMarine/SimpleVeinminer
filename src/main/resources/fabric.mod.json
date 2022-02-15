@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "simple_veinminer",
+  "version": "1.0.0",
+  "name": "Cyan's Simple Veinminer",
+  "description": "A simple veinminer mod\nCheck the homepage for more info",
+  "authors": [
+    "CyanMarine"
+  ],
+  "contact": {
+    "homepage": "https://github.com/PrincessCyanMarine/Simple-Veinminer",
+    "issues": "https://github.com/PrincessCyanMarine/Simple-Veinminer/issues",
+    "sources": "https://github.com/PrincessCyanMarine/Simple-Veinminer"
+  },
+  "license": "GPL-3.0",
+  "icon": "assets/simple_veinminer/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "net.cyanmarine.simple_veinminer.client.SimpleVeinminerClient"
+    ],
+    "main": [
+      "net.cyanmarine.simple_veinminer.SimpleVeinminer"
+    ],
+    "modmenu": [ "net.cyanmarine.simple_veinminer.ModMenuIntegration" ]
+  },
+  "mixins": [
+    "simple_veinminer.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.13.2",
+    "fabric": "*",
+    "minecraft": "1.18.1"
+  },
+  "suggests": {
+    "modmenu": ">=3.0.1",
+    "cloth-config": ">=6.2.57"
+  }
+}
