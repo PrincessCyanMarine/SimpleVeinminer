@@ -11,7 +11,7 @@ So, taking a page from Thanos' book, I did it myself
 
 ![A meme showing no results for "veinminer" in fabric 1.18.1 on the first part and Thanos saying "Fine, I'll do it myself" on the second](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/assets/fine_ill_do_it_myself.png?raw=true "Fine I'll do it myself")
 
-This Is my first actual mod (I've made one for learning purposes before), so some feedback would be appreciated
+This Is my first actual mod, so some feedback would be appreciated
 
 # Config
 Veinmining is usually quite OP so to balance it a bit, I made the exhaustion (how hungry the player gets) be based on the block's hardness
