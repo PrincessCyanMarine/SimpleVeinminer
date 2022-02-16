@@ -34,6 +34,8 @@ dependencies {
     }
 
     modApi("com.terraformersmc:modmenu:${project.modmenu_version}")
+
+    include("com.ea.async:ea-async:1.2.3")
 }
 
 processResources {

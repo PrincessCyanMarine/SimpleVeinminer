@@ -1,5 +1,16 @@
 {
   "key.veinminer.veinminer": "Simple veinminer",
   "key.veinminer.veinmine": "Veinmine",
-  "config.simple_veinminer": "Cyan's Veinminer"
+  "config.simple_veinminer": "Cyan's Veinminer",
+  "config.simple_veinminer.client": "Client",
+  "config.simple_veinminer.server": "Server",
+  "veinmine.message.restriction.tool": "You need a tool to veinmine",
+  "veinmine.message.restriction.hungry": "You are too hungry to veinmine",
+  "server.durability": "Durability",
+  "server.restrictions": "Restrictions",
+  "server.exhaustion": "Exhaustion",
+  "veinmine.config.damage_multiplier": "How much durability does each block consume",
+  "veinmine.config.max_blocks": "How many blocks can be veinmined",
+  "veinmine.config.sword_multiplier": "How much extra durability does each block consume from swords",
+  "veinmine.config.consume_on_instant": "Consume durability on blocks with 0 hardness"
 }

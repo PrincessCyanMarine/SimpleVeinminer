@@ -13,11 +13,13 @@ So, taking a page from Thanos' book, I did it myself
 This Is my first actual mod, so some feedback would be appreciated
 
 # Enchantments and multiplayer
+
 I haven't tested any modded enchantments (yet), but the vanilla ones seem work correctly when veinmining
 
 It should work on multiplayer, but I also didn't get to test that yet
 
 # Config
+
 Veinmining is usually quite OP so to balance it a bit, I made the exhaustion (how hungry the player gets) be based on the block's hardness
 
 So, veinming a bunch of obsidian makes you hungrier than veinmining the same amount of stone or dirt
@@ -29,7 +31,30 @@ I suggest messing around with the configs a bit to find what fits you best
 The easiest way to do that is by using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config), but both are optional
 
 # Modpacks
+
 You can add this to as many modpacks as you would like.
 
 # Bugs? Suggestions? Complaints?
+
 If you have any suggestions (Not that there's a lot to do on a veinmining mod), find any bugs, or have any complaints, feel free to leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues)
+
+# Changelog
+
+> ! V1.1.0
+> !
+> ! When looking at a block whilst holding the veinmine key, a outline appears (said outline can be turned off by changing the config)
+> !
+> ! Changed the formula for exhaustion ((BASE*EXHAUSTION + (BLOCK_HARDNESS * HARDNESS*WEIGHT)) * BLOCKS_VEINMINED)
+> !
+> ! Added option to only allow veinmining with a tool
+
+# known issues
+
+- When on a server, the outline may differ from what will be actually veinmined (not an issue on singleplayer)
+
+# Future plans (TODO list)
+
+- Block White/blacklist
+- Option to only allow veinmining with the right tool
+- Fixing known issues
+- Config to change the outline color
