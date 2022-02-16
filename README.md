@@ -48,6 +48,7 @@ If you have any suggestions (Not that there's a lot to do on a veinmining mod), 
 # Future plans (TODO list)
 - Option to only allow veinmining with the right tool
 - Fixing known issues
+- Option to make the keybind toggleable
 
 # Changelog
 
