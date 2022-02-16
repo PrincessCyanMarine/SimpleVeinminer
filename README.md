@@ -48,9 +48,11 @@ If you have any suggestions (Not that there's a lot to do on a veinmining mod), 
 
 # Changelog
 
-> ### V1.1.1
+> ### v1.1.1
 > - Added an outline when looking at a block whilst holding the veinmine key (said outline can be turned off on the config)
 > - Added config to change the outline color
 > - Changed the formula for exhaustion
 > - Added option to only allow veinmining with a tool
 > - Added blacklist and whitelist
+
+[Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)
