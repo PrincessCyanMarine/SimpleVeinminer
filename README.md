@@ -14,9 +14,9 @@ This Is my first actual mod, so some feedback would be appreciated
 
 # Enchantments and multiplayer
 
-I haven't tested any modded enchantments (yet), but the vanilla ones seem work correctly when veinmining
+I haven't tested any modded enchantments (yet), but the vanilla ones seem work correctly
 
-It should work on multiplayer, but I also didn't get to test that yet
+It should work on multiplayer, but I haven't tested that yet
 
 # Config
 
@@ -38,23 +38,19 @@ You can add this to as many modpacks as you would like.
 
 If you have any suggestions (Not that there's a lot to do on a veinmining mod), find any bugs, or have any complaints, feel free to leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues)
 
-# Changelog
+# Known issues
 
-> ! V1.1.0
-> !
-> ! When looking at a block whilst holding the veinmine key, a outline appears (said outline can be turned off by changing the config)
-> !
-> ! Changed the formula for exhaustion ((BASE*EXHAUSTION + (BLOCK_HARDNESS * HARDNESS*WEIGHT)) * BLOCKS_VEINMINED)
-> !
-> ! Added option to only allow veinmining with a tool
-
-# known issues
-
-- When on a server, the outline may differ from what will be actually veinmined (not an issue on singleplayer)
+- When on a server, the outline may differ from what will be actually veinmined
 
 # Future plans (TODO list)
-
-- Block White/blacklist
 - Option to only allow veinmining with the right tool
 - Fixing known issues
-- Config to change the outline color
+
+# Changelog
+
+> ### V1.1.1
+> - Added an outline when looking at a block whilst holding the veinmine key (said outline can be turned off on the config)
+> - Added config to change the outline color
+> - Changed the formula for exhaustion
+> - Added option to only allow veinmining with a tool
+> - Added blacklist and whitelist

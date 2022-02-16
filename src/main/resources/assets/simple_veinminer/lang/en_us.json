@@ -2,15 +2,38 @@
   "key.veinminer.veinminer": "Simple veinminer",
   "key.veinminer.veinmine": "Veinmine",
   "config.simple_veinminer": "Cyan's Veinminer",
-  "config.simple_veinminer.client": "Client",
-  "config.simple_veinminer.server": "Server",
+
   "veinmine.message.restriction.tool": "You need a tool to veinmine",
   "veinmine.message.restriction.hungry": "You are too hungry to veinmine",
-  "server.durability": "Durability",
-  "server.restrictions": "Restrictions",
-  "server.exhaustion": "Exhaustion",
-  "veinmine.config.damage_multiplier": "How much durability does each block consume",
-  "veinmine.config.max_blocks": "How many blocks can be veinmined",
-  "veinmine.config.sword_multiplier": "How much extra durability does each block consume from swords",
-  "veinmine.config.consume_on_instant": "Consume durability on blocks with 0 hardness"
+
+  "config.simple_veinminer.maxBlocks": "The maximum number of blocks that can be mined at once",
+
+  "config.simple_veinminer.durability.damageMultiplier": "How much damage a tool takes per block veinmined",
+  "config.simple_veinminer.durability.swordMultiplier": "If the tool is a sword, how much does that damage get multiplied by",
+  "config.simple_veinminer.durability.consumeOnInstantBreak": "Lose durability on blocks with 0 hardness",
+
+  "config.simple_veinminer.restrictions.canVeinmineHungry": "Can veinmine when starving",
+  "config.simple_veinminer.restrictions.canVeinmineWithEmptyHand": "Can veinmine without a tool (or sword)",
+  "config.simple_veinminer.restrictions.creativeBypass": "Ignore restrictions when on creative mode",
+
+  "config.simple_veinminer.restrictions.restrictionList": "Whitelist/Blacklist",
+  "config.simple_veinminer.restrictions.restrictionList.listType": "Mode",
+  "config.simple_veinminer.restrictions.restrictionList.list": "List",
+
+  "config.simple_veinminer.restrictions.restrictionList.listType.none": "NONE",
+  "config.simple_veinminer.restrictions.restrictionList.listType.whitelist": "WHITELIST",
+  "config.simple_veinminer.restrictions.restrictionList.listType.blacklist": "BLACKLIST",
+
+  "config.simple_veinminer.exhaustion.baseValue": "Base value",
+  "config.simple_veinminer.exhaustion.exhaustionBasedOnHardness": "Harder blocks exhaust more",
+  "config.simple_veinminer.exhaustion.hardnessWeight": "How much hardness influences exhaustion",
+
+  "config.simple_veinminer.messages.outline_may_differ": "When playing on a server, the outline may differ from what is actually mined",
+  "config.simple_veinminer.outline.outlineBlocks": "Outline blocks that wil be mined",
+  "config.simple_veinminer.outline.outlineColor": "Outline color",
+
+  "config.simple_veinminer.restrictions": "Restrictions",
+  "config.simple_veinminer.exhaustion": "Exhaustion",
+  "config.simple_veinminer.durability": "Durability",
+  "config.simple_veinminer.outline": "Outline"
 }

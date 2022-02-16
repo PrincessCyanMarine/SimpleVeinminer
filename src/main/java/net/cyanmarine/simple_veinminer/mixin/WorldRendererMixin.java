@@ -1,14 +1,12 @@
 package net.cyanmarine.simple_veinminer.mixin;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.shedaniel.math.Color;
 import net.cyanmarine.simple_veinminer.SimpleVeinminer;
 import net.cyanmarine.simple_veinminer.client.SimpleVeinminerClient;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.cyanmarine.simple_veinminer.config.SimpleConfig;
+import net.cyanmarine.simple_veinminer.config.SimpleConfigClient;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.client.render.BlockBreakingInfo;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,12 +23,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Mixin (WorldRenderer.class)
 public abstract class WorldRendererMixin {
     @Shadow @Nullable private ClientWorld world;
-
 
     @Shadow protected static void drawShapeOutline(MatrixStack matrices, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {}
 
@@ -44,11 +39,12 @@ public abstract class WorldRendererMixin {
     public void drawBlockOutline(MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos pos, BlockState state, CallbackInfo ci) {
         if (entity.isPlayer()) {
             PlayerEntity player = (PlayerEntity) entity;
-            boolean outlineVein = SimpleVeinminer.CONFIG.getValue("client.outline_vein", Boolean.class);
-            if (SimpleVeinminerClient.veinMineKeybind.isPressed() && SimpleVeinminer.canVeinmine(player, world, pos, state) && outlineVein) {
+            SimpleConfigClient config = SimpleVeinminerClient.getConfig();
+            SimpleConfig worldConfig = SimpleVeinminer.getWorldConfig();
+            if (SimpleVeinminerClient.veinMineKeybind.isPressed() && SimpleVeinminer.canVeinmine(player, world, pos, state, worldConfig.restrictions) && config.outline.outlineBlocks) {
                 ci.cancel();
                 if (!pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState)) {
-                    Color outlineColor = SimpleVeinminerClient.CONFIG.getValue("client.outline_color", Color.class);
+                    Color outlineColor = config.outline.outlineColor;
 
                     blocksToOutline = getBlocksToOutline(pos, state);
                     currentlyOutliningPos = pos;
@@ -74,7 +70,9 @@ public abstract class WorldRendererMixin {
     }
 
     private ArrayList<BlockPos> getBlocksToOutline(BlockPos pos, BlockState state) {
-        ArrayList<BlockPos> willVeinmine = SimpleVeinminer.getBlocksToVeinmine(world, pos, state);
+        SimpleConfig worldConfig = SimpleVeinminer.getWorldConfig();
+
+        ArrayList<BlockPos> willVeinmine = SimpleVeinminer.getBlocksToVeinmine(world, pos, state, worldConfig.maxBlocks);
         ArrayList<BlockPos> willOutline = new ArrayList<>();
 
         for (int i = 0; i < willVeinmine.size(); i++) {
