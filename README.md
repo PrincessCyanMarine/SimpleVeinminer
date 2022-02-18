@@ -1,6 +1,12 @@
 # Cyan's Veinminer
 
-### The config file for v1.1.1+ is now simple_veinminer.conf
+#### _The config file for v1.1.1+ is now simple_veinminer.conf_
+
+### This Is my first actual mod, so some feedback would be appreciated
+
+### As this is my first mod, I'm not 100% sure if I've done everything the most efficient way possible, but I did my best
+
+# Preamble
 
 I recently started playing with a few mods on 1.18.1
 
@@ -12,51 +18,47 @@ So, taking a page from Thanos' book, I did it myself
 
 ![A meme showing no results for "veinminer" in fabric 1.18.1 ontop and Thanos saying "Fine, I'll do it myself", but with my profile picture (A white girl with long brown curly hair and brown eyes, a golden crown, blue earrings, a pink jumper, a flower crown and glasses) edited in place of his face below](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/assets/fine_ill_do_it_myself.png?raw=true "Fine I'll do it myself")
 
-This Is my first actual mod, so some feedback would be appreciated
-
-
 # Enchantments and multiplayer
 
-I haven't tested any modded enchantments (yet), but the vanilla ones seem work correctly
+I haven't tested any modded enchantments (yet), but the vanilla ones work correctly
 
-It should work on multiplayer, but I haven't tested that yet
+From what I've tested, it works fine on multiplayer
+
+But admittedly, I play basically just singleplayer, so if there are multiplayer only issues, I'll mostly likely never find them on my on
+
+So, if you find anything wrong, please do [report it](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues)
 
 # Config
 
-Veinmining is usually quite OP so to balance it a bit, I made the exhaustion (how hungry the player gets) be based on the block's hardness
+The mod works out of the box but it has some config options you may find useful
 
-So, veinming a bunch of obsidian makes you hungrier than veinmining the same amount of stone or dirt
-
-But I know everyone plays differently so the configs allow you to adjust exhaustion, durability usage and the maximum amount of blocks that can be veinmined at once
-
-I suggest messing around with the configs a bit to find what fits you best
+I suggest messing around with them a bit to find what fits you best
 
 The easiest way to do that is by using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config), but both are optional
 
+# Found a bug? Has a suggestion? Any complaints?
+
+Please leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues) here on Github
+
 # Modpacks
 
-You can add this to as many modpacks as you would like.
-
-# Bugs? Suggestions? Complaints?
-
-If you have any suggestions (Not that there's a lot to do on a veinmining mod), find any bugs, or have any complaints, feel free to leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues)
-
-# Known issues
-
-- When on a server, the outline may differ from what will be actually veinmined
-
-# Future plans (TODO list)
-- Option to only allow veinmining with the right tool
-- Fixing known issues
-- Option to make the keybind toggleable
+Feel free to add this to as many modpacks as you would like
 
 # Changelog
 
-> ### v1.1.1
-> - Added an outline when looking at a block whilst holding the veinmine key (said outline can be turned off on the config)
-> - Added config to change the outline color
-> - Changed the formula for exhaustion
-> - Added option to only allow veinmining with a tool
-> - Added blacklist and whitelist
+## [v1.2.0]
+
+### Added
+
+- Config to make the key toggle veinmining on and off
+- Synchronization between the client's config and the server config (fixing the disparity between the outline and what was actually broken when on servers)
+- Config to only allow veinmining when using the right tool for that block
+- Config to hide restriction messages
+
+### Changed
+
+- If the tool breaks while veinmining, the veinmining stops
+- Blocks that wouldn't drop anything when broken normally, won't drop when veinmining (Eg.: Mining snow without a shovel or stone without a pickaxe)
+- Version requirements for minecraft and fabric, mod should now work for any 1.18.x version currently released (Although only 1.18.1 is _officially_ supported)
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)

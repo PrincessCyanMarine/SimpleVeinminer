@@ -1,12 +1,19 @@
 {
-  "key.veinminer.veinminer": "Simple veinminer",
-  "key.veinminer.veinmine": "Veinmine",
+  "key.simple_veinminer.veinminerCategory": "Simple veinminer",
+  "key.simple_veinminer.veinminingKey": "Veinmine",
   "config.simple_veinminer": "Cyan's Veinminer",
 
-  "veinmine.message.restriction.tool": "You need a tool to veinmine",
-  "veinmine.message.restriction.hungry": "You are too hungry to veinmine",
+  "messages.simple_veinminer.restriction.tool": "You need a tool to veinmine",
+  "messages.simple_veinminer.restriction.specificTool": "This is not the right tool for this block",
+  "messages.simple_veinminer.restriction.hungry": "You are too hungry to veinmine",
+  "messages.simple_veinminer.veinminingToggled.on": "Veinmining toggled on",
+  "messages.simple_veinminer.veinminingToggled.off": "Veinmining toggled off",
 
   "config.simple_veinminer.maxBlocks": "The maximum number of blocks that can be mined at once",
+  "config.simple_veinminer.keybindToggles": "Keybind mode",
+  "config.simple_veinminer.keybindToggles.value.true": "Toggle",
+  "config.simple_veinminer.keybindToggles.value.false": "Hold",
+  "config.simple_veinminer.showRestrictionMessages": "Show restriction messages",
 
   "config.simple_veinminer.durability.damageMultiplier": "How much damage a tool takes per block veinmined",
   "config.simple_veinminer.durability.swordMultiplier": "If the tool is a sword, how much does that damage get multiplied by",
@@ -15,6 +22,12 @@
   "config.simple_veinminer.restrictions.canVeinmineHungry": "Can veinmine when starving",
   "config.simple_veinminer.restrictions.canVeinmineWithEmptyHand": "Can veinmine without a tool (or sword)",
   "config.simple_veinminer.restrictions.creativeBypass": "Ignore restrictions when on creative mode",
+  "config.simple_veinminer.restrictions.canOnlyUseSuitableTools": "Can only veinmine with the right tool",
+
+  "config.simple_veinminer.tooltip.suitableTools.1": "Will only allow to veinmine wood using an axe,",
+  "config.simple_veinminer.tooltip.suitableTools.2": "dirt using a shovel, stone using a pickaxe, etc.",
+  "config.simple_veinminer.tooltip.toggleModeRecommendation.1": "Recommended: If you turn this on,",
+  "config.simple_veinminer.tooltip.toggleModeRecommendation.2": "turn restriction messages off and highlights on",
 
   "config.simple_veinminer.restrictions.restrictionList": "Whitelist/Blacklist",
   "config.simple_veinminer.restrictions.restrictionList.listType": "Mode",
@@ -28,7 +41,6 @@
   "config.simple_veinminer.exhaustion.exhaustionBasedOnHardness": "Harder blocks exhaust more",
   "config.simple_veinminer.exhaustion.hardnessWeight": "How much hardness influences exhaustion",
 
-  "config.simple_veinminer.messages.outline_may_differ": "When playing on a server, the outline may differ from what is actually mined",
   "config.simple_veinminer.outline.outlineBlocks": "Outline blocks that wil be mined",
   "config.simple_veinminer.outline.outlineColor": "Outline color",
 

@@ -39,12 +39,12 @@ public abstract class WorldRendererMixin {
     public void drawBlockOutline(MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos pos, BlockState state, CallbackInfo ci) {
         if (entity.isPlayer()) {
             PlayerEntity player = (PlayerEntity) entity;
-            SimpleConfigClient config = SimpleVeinminerClient.getConfig();
-            SimpleConfig worldConfig = SimpleVeinminer.getWorldConfig();
-            if (SimpleVeinminerClient.veinMineKeybind.isPressed() && SimpleVeinminer.canVeinmine(player, world, pos, state, worldConfig.restrictions) && config.outline.outlineBlocks) {
+            SimpleConfigClient.Outline outline = SimpleVeinminerClient.getConfig().outline;
+            SimpleConfig.SimpleConfigCopy worldConfig = SimpleVeinminerClient.getWorldConfig();
+            if (SimpleVeinminerClient.veinMineKeybind.isPressed() && SimpleVeinminer.canVeinmine(player, world, pos, state, worldConfig.restrictions) && outline.outlineBlocks) {
                 ci.cancel();
                 if (!pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState)) {
-                    Color outlineColor = config.outline.outlineColor;
+                    Color outlineColor = outline.outlineColor;
 
                     blocksToOutline = getBlocksToOutline(pos, state);
                     currentlyOutliningPos = pos;
@@ -70,7 +70,7 @@ public abstract class WorldRendererMixin {
     }
 
     private ArrayList<BlockPos> getBlocksToOutline(BlockPos pos, BlockState state) {
-        SimpleConfig worldConfig = SimpleVeinminer.getWorldConfig();
+        SimpleConfig.SimpleConfigCopy worldConfig = SimpleVeinminerClient.getWorldConfig();
 
         ArrayList<BlockPos> willVeinmine = SimpleVeinminer.getBlocksToVeinmine(world, pos, state, worldConfig.maxBlocks);
         ArrayList<BlockPos> willOutline = new ArrayList<>();
