@@ -16,9 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  -->
 
 ## [v1.2.1]
+### Added
+- Added #c:logs tag
 ### Changed
 - Updated to work on 1.18.2
-- Added #c:logs tag
 - Changed #c:ores tag to include some modded ores
 
 ## [v1.2.0]
