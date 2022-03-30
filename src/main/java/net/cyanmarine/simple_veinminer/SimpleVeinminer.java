@@ -20,7 +20,7 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -61,16 +61,14 @@ public class SimpleVeinminer implements ModInitializer {
     }
 
     private static boolean listIncludes(Block block, SimpleConfig.Restrictions restrictions) {
-        Collection<Identifier> tags = BlockTags.getTagGroup().getTagsFor(block);
-
         for (int i = 0; i < restrictions.restrictionList.list.size(); i++) {
             String name = restrictions.restrictionList.list.get(i);
             Identifier identifier = new Identifier(name.replaceAll("[^a-z0-9-_:]", ""));
             if (name.startsWith("#")) {
-                if (tags.contains(identifier)) return true;
+                if (block.getDefaultState().isIn(TagKey.of(Registry.BLOCK_KEY, identifier))) return true;
             } else {
                 Block compareTo = Registry.BLOCK.get(identifier);
-                if (compareTo != null && compareTo.equals(block)) return true;
+                if (compareTo.equals(block)) return true;
             }
         }
         return false;
@@ -83,12 +81,12 @@ public class SimpleVeinminer implements ModInitializer {
         boolean sendMessage = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT && SimpleVeinminerClient.getConfig().showRestrictionMessages;
 
 
-        if (restrictions.restrictionList.listType != restrictions.restrictionList.listType.NONE) {
+        if (restrictions.restrictionList.listType != SimpleConfig.Restrictions.RestrictionList.ListType.NONE) {
             boolean isInList = listIncludes(state.getBlock(), restrictions);
-            if ((restrictions.restrictionList.listType == restrictions.restrictionList.listType.BLACKLIST) == isInList) return false;
+            if ((restrictions.restrictionList.listType == SimpleConfig.Restrictions.RestrictionList.ListType.BLACKLIST) == isInList) return false;
         }
 
-        if (!restrictions.canVeinmineWithEmptyHand && !(hand instanceof ToolItem || hand instanceof SwordItem || hand instanceof ShearsItem)) {
+        if (!restrictions.canVeinmineWithEmptyHand && !(hand instanceof ToolItem || hand instanceof ShearsItem)) {
             if (sendMessage) player.sendMessage(new TranslatableText("messages.simple_veinminer.restriction.tool"), true);
             return false;
         }
@@ -114,14 +112,12 @@ public class SimpleVeinminer implements ModInitializer {
         playersVeinMining = new ArrayList<>();
         ServerPlayNetworking.registerGlobalReceiver(Constants.NETWORKING_VEINMINE, (server, player, handler, buf, sender) -> {
             boolean isVeinMining = buf.readBoolean();
-            server.execute(()->{
-                setVeinmining(player, isVeinMining);
-            });
+            server.execute(()->setVeinmining(player, isVeinMining));
         });
 
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> { syncConfig(handler.player); });
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server1) -> { setVeinmining(handler.getPlayer(), false); });
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> { this.server = server; LOGGER.info("New server");});
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server)->syncConfig(handler.player));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server1)->setVeinmining(handler.getPlayer(), false));
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> { SimpleVeinminer.server = server; LOGGER.info("New server");});
 
         LOGGER.info("Simple VeinMiner initialized");
     }

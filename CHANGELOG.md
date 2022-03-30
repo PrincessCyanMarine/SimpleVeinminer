@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
  -->
 
+## [v1.2.1]
+### Changed
+- Updated to work on 1.18.2
+- Added #c:logs tag
+- Changed #c:ores tag to include some modded ores
+
 ## [v1.2.0]
 ### Added
 - Config to make the key toggle veinmining on and off

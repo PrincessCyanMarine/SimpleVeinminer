@@ -58,13 +58,13 @@ public class SimpleConfig extends Config implements ConfigContainer {
             @ConfigEntry.Dropdown
             public ListType listType = ListType.NONE;
             @ConfigEntry(comment = "More information at https://github.com/PrincessCyanMarine/Simple-Veinminer/wiki/Whitelist-and-Blacklist")
-            public List<String> list = Arrays.asList("#minecraft:logs", "#c:ores");
+            public List<String> list = Arrays.asList("#c:logs", "#c:ores");
 
             public void setList(List<String> list) {this.list = list; syncConfig();}
             public void setListType(ListType listType) {this.listType = listType; syncConfig();}
 
-            public static enum ListType {
-                NONE, WHITELIST, BLACKLIST;
+            public enum ListType {
+                NONE, WHITELIST, BLACKLIST
             }
         }
 

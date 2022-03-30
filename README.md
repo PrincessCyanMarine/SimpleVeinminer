@@ -46,19 +46,10 @@ Feel free to add this to as many modpacks as you would like
 
 # Changelog
 
-## [v1.2.0]
-
-### Added
-
-- Config to make the key toggle veinmining on and off
-- Synchronization between the client's config and the server config (fixing the disparity between the outline and what was actually broken when on servers)
-- Config to only allow veinmining when using the right tool for that block
-- Config to hide restriction messages
-
+## [v1.2.1]
 ### Changed
-
-- If the tool breaks while veinmining, the veinmining stops
-- Blocks that wouldn't drop anything when broken normally, won't drop when veinmining (Eg.: Mining snow without a shovel or stone without a pickaxe)
-- Version requirements for minecraft and fabric, mod should now work for any 1.18.x version currently released (Although only 1.18.1 is _officially_ supported)
+- Updated to work on 1.18.2
+- Added #c:logs tag
+- Changed #c:ores tag to include some modded ores
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)
