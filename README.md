@@ -47,9 +47,10 @@ Feel free to add this to as many modpacks as you would like
 # Changelog
 
 ## [v1.2.1]
+### Added
+- Added #c:logs tag
 ### Changed
 - Updated to work on 1.18.2
-- Added #c:logs tag
 - Changed #c:ores tag to include some modded ores
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)
