@@ -22,7 +22,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -87,17 +87,17 @@ public class SimpleVeinminer implements ModInitializer {
         }
 
         if (!restrictions.canVeinmineWithEmptyHand && !(hand instanceof ToolItem || hand instanceof ShearsItem)) {
-            if (sendMessage) player.sendMessage(new TranslatableText("messages.simple_veinminer.restriction.tool"), true);
+            if (sendMessage) player.sendMessage(Text.translatable("messages.simple_veinminer.restriction.tool"), true);
             return false;
         }
 
         if (restrictions.canOnlyUseSuitableTools && !player.getMainHandStack().isSuitableFor(state)) {
-            if (sendMessage) player.sendMessage(new TranslatableText("messages.simple_veinminer.restriction.specificTool"), true);
+            if (sendMessage) player.sendMessage(Text.translatable("messages.simple_veinminer.restriction.specificTool"), true);
             return false;
         }
 
         if (!restrictions.canVeinmineHungry && player.getHungerManager().getFoodLevel() < 1) {
-            if (sendMessage) player.sendMessage(new TranslatableText("messages.simple_veinminer.restriction.hungry"), true);
+            if (sendMessage) player.sendMessage(Text.translatable("messages.simple_veinminer.restriction.hungry"), true);
             return false;
         }
 

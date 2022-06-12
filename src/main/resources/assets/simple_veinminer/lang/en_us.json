@@ -24,10 +24,8 @@
   "config.simple_veinminer.restrictions.creativeBypass": "Ignore restrictions when on creative mode",
   "config.simple_veinminer.restrictions.canOnlyUseSuitableTools": "Can only veinmine with the right tool",
 
-  "config.simple_veinminer.tooltip.suitableTools.1": "Will only allow to veinmine wood using an axe,",
-  "config.simple_veinminer.tooltip.suitableTools.2": "dirt using a shovel, stone using a pickaxe, etc.",
-  "config.simple_veinminer.tooltip.toggleModeRecommendation.1": "Recommended: If you turn this on,",
-  "config.simple_veinminer.tooltip.toggleModeRecommendation.2": "turn restriction messages off and highlights on",
+  "config.simple_veinminer.restrictions.canOnlyUseSuitableTools.description": "Will only allow to veinmine wood using an axe,\ndirt using a shovel, stone using a pickaxe, etc.",
+  "config.simple_veinminer.keybindToggles.description": "Recommended: If you turn this on,\nturn restriction messages off and highlights on",
 
   "config.simple_veinminer.restrictions.restrictionList": "Whitelist/Blacklist",
   "config.simple_veinminer.restrictions.restrictionList.listType": "Mode",

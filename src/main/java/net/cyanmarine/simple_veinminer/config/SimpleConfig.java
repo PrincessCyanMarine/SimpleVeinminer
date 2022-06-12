@@ -5,7 +5,6 @@ import me.lortseam.completeconfig.api.ConfigEntries;
 import me.lortseam.completeconfig.api.ConfigEntry;
 import me.lortseam.completeconfig.api.ConfigGroup;
 import me.lortseam.completeconfig.data.Config;
-import me.lortseam.completeconfig.extension.BaseExtension;
 import net.cyanmarine.simple_veinminer.SimpleVeinminer;
 import net.cyanmarine.simple_veinminer.server.SimpleVeinminerServer;
 import net.fabricmc.api.EnvType;
@@ -36,12 +35,12 @@ public class SimpleConfig extends Config implements ConfigContainer {
         super("simple_veinminer");
     }
 
-    @ConfigEntries
+    @ConfigEntries(includeAll = true)
     public static class Restrictions implements ConfigGroup {
         public boolean canVeinmineHungry = false;
         public boolean canVeinmineWithEmptyHand = true;
         public boolean creativeBypass = true;
-        @ConfigEntry(tooltipTranslationKeys = {"tooltip.suitableTools.1", "tooltip.suitableTools.2"}, comment = "Will only allow to veinmine wood using an axe, dirt using a shovel, stone using a pickaxe, etc.")
+        @ConfigEntry(comment = "Will only allow to veinmine wood using an axe, dirt using a shovel, stone using a pickaxe, etc.")
         public boolean canOnlyUseSuitableTools = false;
 
         public void setCanVeinmineWithEmptyHand(boolean canVeinmineWithEmptyHand) {  this.canVeinmineWithEmptyHand = canVeinmineWithEmptyHand; syncConfig(); }
@@ -52,7 +51,7 @@ public class SimpleConfig extends Config implements ConfigContainer {
         @Transitive
         public RestrictionList restrictionList = new RestrictionList();
 
-        @ConfigEntries
+        @ConfigEntries(includeAll = false)
         public static class RestrictionList implements ConfigGroup {
             @ConfigEntry(comment = "Valid values are NONE, BLACKLIST, and WHITELIST")
             @ConfigEntry.Dropdown
@@ -70,14 +69,14 @@ public class SimpleConfig extends Config implements ConfigContainer {
 
     }
 
-    @ConfigEntries
+    @ConfigEntries(includeAll = true)
     public static class Exhaustion implements ConfigGroup {
         public double baseValue = 0.3;
         public boolean exhaustionBasedOnHardness = true;
         public double hardnessWeight = 0.1;
     }
 
-    @ConfigEntries
+    @ConfigEntries(includeAll = true)
     public static class Durability implements ConfigGroup {
         public double damageMultiplier = 1.0;
         public double swordMultiplier = 2.0;

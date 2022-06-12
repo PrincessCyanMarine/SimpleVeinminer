@@ -53,3 +53,7 @@ Feel free to add this to as many modpacks as you would like
 - Changed #c:ores tag to include some modded ores
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)
+
+
+# TODO? (No promises tho)
+Config to make different tier tools have different max blocks

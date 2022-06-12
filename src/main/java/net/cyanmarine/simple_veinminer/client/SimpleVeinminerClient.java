@@ -16,7 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class SimpleVeinminerClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (veinMining != veinMineKeybind.isPressed()) {
                 veinMining = !veinMining;
-                if (config.keybindToggles) client.player.sendMessage(veinMining ? new TranslatableText("messages.simple_veinminer.veinminingToggled.on") : new TranslatableText("messages.simple_veinminer.veinminingToggled.off"), true);
+                if (config.keybindToggles) client.player.sendMessage(veinMining ? Text.translatable("messages.simple_veinminer.veinminingToggled.on") : Text.translatable("messages.simple_veinminer.veinminingToggled.off"), true);
 
                 PacketByteBuf buf = PacketByteBufs.create();
                 buf.writeBoolean(veinMining);
