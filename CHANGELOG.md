@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Changelog
 <!-- All notable changes to this project (post version 5.3.0) will be documented in this file.
 
@@ -14,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
  -->
+
+## [v1.3.0]
+### Changed
+- Updated for minecraft 1.19
 
 ## [v1.2.1]
 ### Changed

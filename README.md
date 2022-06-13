@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Cyan's Veinminer
 
 #### _The config file for v1.1.1+ is now simple_veinminer.conf_
@@ -46,14 +47,11 @@ Feel free to add this to as many modpacks as you would like
 
 # Changelog
 
-## [v1.2.1]
+## [v1.3.0]
 ### Changed
-- Updated to work on 1.18.2
-- Added #c:logs tag
-- Changed #c:ores tag to include some modded ores
-
+- Updated for minecraft 1.19
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)
 
 
 # TODO? (No promises tho)
-Config to make different tier tools have different max blocks
+- Config to make different tier tools have different max blocks
