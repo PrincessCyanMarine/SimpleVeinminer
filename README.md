@@ -16,7 +16,7 @@ So, I looked for a veinminer for 1.18.1 fabric and... Nothing (Well there's [Vei
 
 So, taking a page from Thanos' book, I did it myself
 
-![A meme showing no results for "veinminer" in fabric 1.18.1 ontop and Thanos saying "Fine, I'll do it myself", but with my profile picture (A white girl with long brown curly hair and brown eyes, a golden crown, blue earrings, a pink jumper, a flower crown and glasses) edited in place of his face below](https://github.com/PrincessCyanMarine/SimpleVeinminer/blob/main/assets/fine_ill_do_it_myself.png?raw=true "Fine I'll do it myself")
+![A meme showing no results for "veinminer" in fabric 1.18.1 ontop and Thanos saying "Fine, I'll do it myself", but with my profile picture (A white girl with long brown curly hair and brown eyes, a golden crown, blue earrings, a pink jumper, a flower crown and glasses) edited in place of his face below](https://github.com/PrincessCyanMarine/SimpleVeinminer/blob/1.19-v1.3.0/assets/fine_ill_do_it_myself.png?raw=true "Fine I'll do it myself")
 
 # Enchantments and multiplayer
 
