@@ -55,5 +55,6 @@ Feel free to add this to as many modpacks as you would like
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)
 
 
-# TODO? (No promises tho)
+# TODO? (No promises tho, college is tough and time is limited)
 - Config to make different tier tools have different max blocks
+- Optionally serverside only (as suggested in this [comment](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer#c22))
