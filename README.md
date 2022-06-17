@@ -26,6 +26,8 @@ From what I've tested, it works fine on multiplayer
 
 But admittedly, I play basically just singleplayer, so if there are multiplayer only issues, I'll mostly likely never find them on my on
 
+The mod needs to be installed on the server and clients for it to work properly
+
 So, if you find anything wrong, please do [report it](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues)
 
 # Config
