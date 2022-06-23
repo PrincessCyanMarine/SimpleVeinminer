@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Changelog
 <!-- All notable changes to this project (post version 5.3.0) will be documented in this file.
 
