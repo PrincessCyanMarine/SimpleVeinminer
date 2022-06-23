@@ -22,14 +22,23 @@ import java.util.Objects;
 public class SimpleConfig extends Config implements ConfigContainer {
 
     @Transitive
+    public Limits limits = new Limits();
+    @Transitive
     public Restrictions restrictions = new Restrictions();
     @Transitive
     public Exhaustion exhaustion = new Exhaustion();
     @Transitive
     public Durability durability = new Durability();
 
-    @ConfigEntry
-    public int maxBlocks = 150;
+    @ConfigEntries(includeAll = true)
+    public static class Limits implements ConfigGroup {
+        public int maxBlocks = 150;
+        public boolean materialBasedLimits = false;
+
+        public void setMaxBlocks(int maxBlocks) {  this.maxBlocks = maxBlocks; syncConfig(); }
+        public void setMaterialBasedLimits(boolean materialBasedLimits) {  this.materialBasedLimits = materialBasedLimits; syncConfig(); }
+    }
+
 
     public SimpleConfig() {
         super("simple_veinminer");
@@ -85,7 +94,7 @@ public class SimpleConfig extends Config implements ConfigContainer {
 
     public static class SimpleConfigCopy {
         public Restrictions restrictions = new Restrictions();
-        public int maxBlocks = 150;
+        public Limits limits = new Limits();
 
         private SimpleConfigCopy() {}
 
@@ -97,14 +106,15 @@ public class SimpleConfig extends Config implements ConfigContainer {
             this.restrictions.restrictionList.listType = buf.readEnumConstant(Restrictions.RestrictionList.ListType.class);
             this.restrictions.restrictionList.list = Arrays.stream(buf.readString().split(";")).toList();
 
-            this.maxBlocks = buf.readInt();
+            this.limits.maxBlocks = buf.readInt();
+            this.limits.materialBasedLimits = buf.readBoolean();
         }
 
         public static SimpleConfigCopy from(SimpleConfig config) {
             SimpleConfigCopy res = new SimpleConfigCopy();
 
             res.restrictions = config.restrictions;
-            res.maxBlocks = config.maxBlocks;
+            res.limits = config.limits;
 
             return res;
         }
@@ -121,12 +131,11 @@ public class SimpleConfig extends Config implements ConfigContainer {
         buf.writeEnumConstant(restrictions.restrictionList.listType);
         buf.writeString(String.join(";", restrictions.restrictionList.list));
 
-        buf.writeInt(maxBlocks);
+        buf.writeInt(limits.maxBlocks);
+        buf.writeBoolean(limits.materialBasedLimits);
 
         return buf;
     }
 
     public static void syncConfig() { SimpleVeinminer.SyncConfigForAllPlayers(); }
-
-    public void setMaxBlocks(int maxBlocks) {  this.maxBlocks = maxBlocks; syncConfig(); }
 }

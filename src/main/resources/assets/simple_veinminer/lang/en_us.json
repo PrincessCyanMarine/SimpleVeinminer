@@ -9,11 +9,19 @@
   "messages.simple_veinminer.veinminingToggled.on": "Veinmining toggled on",
   "messages.simple_veinminer.veinminingToggled.off": "Veinmining toggled off",
 
-  "config.simple_veinminer.maxBlocks": "The maximum number of blocks that can be mined at once",
   "config.simple_veinminer.keybindToggles": "Keybind mode",
   "config.simple_veinminer.keybindToggles.value.true": "Toggle",
   "config.simple_veinminer.keybindToggles.value.false": "Hold",
   "config.simple_veinminer.showRestrictionMessages": "Show restriction messages",
+  "config.simple_veinminer.showMiningProgress": "Show mining progress",
+
+  "config.simple_veinminer.showMiningProgress.description": "Show mining progress on the blocks being veinmined",
+
+  "config.simple_veinminer.limits.maxBlocks": "Max blocks",
+  "config.simple_veinminer.limits.materialBasedLimits": "Material based limits",
+
+  "config.simple_veinminer.limits.maxBlocks.description": "The maximum number of blocks that can be mined at once",
+  "config.simple_veinminer.limits.materialBasedLimits.description": "The weaker the tool used to veinmine,\nthe less blocks can be veinmined at once",
 
   "config.simple_veinminer.durability.damageMultiplier": "How much damage a tool takes per block veinmined",
   "config.simple_veinminer.durability.swordMultiplier": "If the tool is a sword, how much does that damage get multiplied by",
@@ -42,8 +50,11 @@
   "config.simple_veinminer.outline.outlineBlocks": "Outline blocks that wil be mined",
   "config.simple_veinminer.outline.outlineColor": "Outline color",
 
+  "config.simple_veinminer.limits": "Limits",
   "config.simple_veinminer.restrictions": "Restrictions",
   "config.simple_veinminer.exhaustion": "Exhaustion",
   "config.simple_veinminer.durability": "Durability",
-  "config.simple_veinminer.outline": "Outline"
+  "config.simple_veinminer.outline": "Outline",
+
+  "gamerule.doServerSideVeinmining": "VeinMining should be handled server side"
 }
