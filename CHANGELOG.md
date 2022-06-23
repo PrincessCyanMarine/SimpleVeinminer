@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
  -->
 
+## [v1.3.1]
+- Mining progress is also showed on blocks being veinmined (can be deactivated, only shows to the player who's veinmining said blocks)
+- Added config option to make the block limit variable depending on the tool used (if turned on, "maxBlocks" is divided by max(1, 6 - (toolMiningLevel + 1))) (shears are counted as having the same mining level as IRON)
+- Added Gamerule to turn serverside veinmining on (doServerSideVeinmining). When on, mining while shifted will veinmine, whether the player has the mod or not. If the player has the mod and serverside veinmining is on, shifting will show outlines and mining progress (if they are turned on)
+
+
 ## [v1.3.0]
 ### Changed
 - Updated for minecraft 1.19

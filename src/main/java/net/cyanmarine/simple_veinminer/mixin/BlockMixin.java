@@ -9,10 +9,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
-import net.minecraft.item.ToolItem;
+import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.property.Property;
@@ -43,14 +40,12 @@ public class BlockMixin {
         SimpleConfig config = SimpleVeinminer.getConfig();
 
         SimpleConfig.Exhaustion exhaustion = config.exhaustion;
-        SimpleVeinminer.LOGGER.info(exhaustion.baseValue + " " + exhaustion.hardnessWeight);
+        // SimpleVeinminer.LOGGER.info(exhaustion.baseValue + " " + exhaustion.hardnessWeight);
         SimpleConfig.Durability durability = config.durability;
         double damageMultiplier = durability.damageMultiplier;
         if (handItem instanceof SwordItem) damageMultiplier *= durability.swordMultiplier;
 
-        int maxBlocks = config.maxBlocks;
-
-        ArrayList<BlockPos> blocksToBreak = SimpleVeinminer.getBlocksToVeinmine(world, pos, state, maxBlocks);
+        ArrayList<BlockPos> blocksToBreak = SimpleVeinminer.getBlocksToVeinmine(world, pos, state, SimpleVeinminer.getMaxBlocks(handItem));
 
         Block block = state.getBlock();
         double totalExhausted = (exhaustion.baseValue + (exhaustion.exhaustionBasedOnHardness ? (block.getHardness() * exhaustion.hardnessWeight) : 0));

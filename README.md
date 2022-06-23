@@ -48,13 +48,15 @@ Feel free to add this to as many modpacks as you would like
 
 # Changelog
 
-## [v1.3.0]
-### Changed
-- Updated for minecraft 1.19
+## [v1.3.1]
+- Mining progress is also showed on blocks being veinmined (can be deactivated, only shows to the player who's veinmining said blocks)
+- Added config option to make the block limit variable depending on the tool used (if turned on, "maxBlocks" is divided by max(1, 6 - (toolMiningLevel + 1))) (shears are counted as having the same mining level as IRON)
+- Added Gamerule to turn serverside veinmining on (doServerSideVeinmining). When on, mining while shifted will veinmine, whether the player has the mod or not. If the player has the mod and serverside veinmining is on, shifting will show outlines and mining progress (if they are turned on)
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)
 
 
 # TODO? (No promises tho, college is tough and time is limited)
-- Config to make different tier tools have different max blocks
+- ~~Config to make different tier tools have different max blocks~~
 - Optionally serverside only (as suggested in this [comment](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer#c22))
+- Shapes (as suggested in this [comment](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer#c26))

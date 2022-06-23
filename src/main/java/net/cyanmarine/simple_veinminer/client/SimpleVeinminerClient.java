@@ -1,9 +1,11 @@
 package net.cyanmarine.simple_veinminer.client;
 
-import me.lortseam.completeconfig.gui.ConfigScreenBuilder;
 import me.lortseam.completeconfig.gui.cloth.ClothConfigScreenBuilder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
+import net.cyanmarine.simple_veinminer.gui.ScreenBuilderType;
+import me.lortseam.completeconfig.gui.ConfigScreenBuilder;
 import net.cyanmarine.simple_veinminer.Constants;
+import net.cyanmarine.simple_veinminer.SimpleVeinminer;
 import net.cyanmarine.simple_veinminer.config.SimpleConfig;
 import net.cyanmarine.simple_veinminer.config.SimpleConfigClient;
 import net.fabricmc.api.ClientModInitializer;
@@ -27,6 +29,7 @@ public class SimpleVeinminerClient implements ClientModInitializer {
     private static SimpleConfigClient config;
     public static KeyBinding veinMineKeybind = KeyBindingHelper.registerKeyBinding(new StickyKeyBinding("key.simple_veinminer.veinminingKey", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.simple_veinminer.veinminerCategory", () -> config.keybindToggles));
     public boolean veinMining;
+    public static boolean isVeinMiningServerSide = false;
     static SimpleConfig.SimpleConfigCopy worldConfig;
 
     public static SimpleConfig.SimpleConfigCopy getWorldConfig() {
@@ -40,7 +43,11 @@ public class SimpleVeinminerClient implements ClientModInitializer {
         config = new SimpleConfigClient();
         config.load();
         worldConfig = SimpleConfig.SimpleConfigCopy.from(config);
-        if (FabricLoader.getInstance().isModLoaded("cloth-config")) ConfigScreenBuilder.setMain("simple_veinminer", new ClothConfigScreenBuilder(() -> ConfigBuilder.create().setTransparentBackground(true).setShouldListSmoothScroll(true).setShouldTabsSmoothScroll(true)));
+        if (FabricLoader.getInstance().isModLoaded("cloth-config"))
+            ConfigScreenBuilder.setMain(SimpleVeinminer.MOD_ID, ScreenBuilderType.CLOTH_CONFIG.create());
+        //else
+            //ConfigScreenBuilder.setMain(SimpleVeinminer.MOD_ID, new CoatScreenBuilder());
+
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (veinMining != veinMineKeybind.isPressed()) {
@@ -62,6 +69,14 @@ public class SimpleVeinminerClient implements ClientModInitializer {
             client.execute(() -> {
                 worldConfig = SimpleConfig.copy(buf);
                 buf.release();
+            });
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(Constants.SERVERSIDE_UPDATE, (client, handler, buf, responseSender) -> {
+            boolean newValue = buf.readBoolean();
+
+            client.execute(() -> {
+                isVeinMiningServerSide = newValue;
             });
         });
 

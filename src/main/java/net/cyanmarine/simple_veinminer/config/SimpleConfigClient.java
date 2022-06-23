@@ -7,14 +7,15 @@ import me.shedaniel.math.Color;
 
 @ConfigEntries(includeAll = true)
 public class SimpleConfigClient extends SimpleConfig {
-    @Transitive
-    public Outline outline = new Outline();
-
+    public boolean showMiningProgress = true;
     public boolean showRestrictionMessages = true;
 
     @ConfigEntry(comment = "Recommended: If you turn this on, turn restriction messages off and highlights on")
     @ConfigEntry.Boolean(falseKey = "keybindToggles.value.false", trueKey = "keybindToggles.value.true")
     public boolean keybindToggles = false;
+
+    @Transitive
+    public Outline outline = new Outline();
 
     @ConfigEntries(includeAll = true)
     public static class Outline implements ConfigGroup {
