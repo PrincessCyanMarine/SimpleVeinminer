@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Changelog
 <!-- All notable changes to this project (post version 5.3.0) will be documented in this file.
 
@@ -14,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
  -->
+
+## [v1.3.2]
+- Added the hammer veinmining shape
+
 
 ## [v1.3.1]
 - Mining progress is also showed on blocks being veinmined (can be deactivated, only shows to the player who's veinmining said blocks)

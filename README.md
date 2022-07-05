@@ -26,7 +26,7 @@ From what I've tested, it works fine on multiplayer
 
 But admittedly, I play basically just singleplayer, so if there are multiplayer only issues, I'll mostly likely never find them on my on
 
-The mod needs to be installed on the server and clients for it to work properly
+The mod needs to be installed on the server and is recommended on the client
 
 So, if you find anything wrong, please do [report it](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues)
 
@@ -38,6 +38,10 @@ I suggest messing around with them a bit to find what fits you best
 
 The easiest way to do that is by using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config), but both are optional
 
+# Shapes
+Using the /veinmining command, you can choose a shape (only hammer or regular as of now) to veinmine
+Shapes need to be turned on in the config as they are able to bypass the block limit
+
 # Found a bug? Has a suggestion? Any complaints?
 
 Please leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues) here on Github
@@ -48,10 +52,8 @@ Feel free to add this to as many modpacks as you would like
 
 # Changelog
 
-## [v1.3.1]
-- Mining progress is also showed on blocks being veinmined (can be deactivated, only shows to the player who's veinmining said blocks)
-- Added config option to make the block limit variable depending on the tool used (if turned on, "maxBlocks" is divided by max(1, 6 - (toolMiningLevel + 1))) (shears are counted as having the same mining level as IRON)
-- Added Gamerule to turn serverside veinmining on (doServerSideVeinmining). When on, mining while shifted will veinmine, whether the player has the mod or not. If the player has the mod and serverside veinmining is on, shifting will show outlines and mining progress (if they are turned on)
+## [v1.3.2]
+- Added the hammer veinmining shape
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/1.19/CHANGELOG.md)
 
@@ -59,4 +61,4 @@ Feel free to add this to as many modpacks as you would like
 # TODO? (No promises tho, college is tough and time is limited)
 - ~~Config to make different tier tools have different max blocks~~
 - ~~Optionally serverside only (as suggested in this [comment](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer#c22))~~
-- Shapes (as suggested in this [comment](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer#c26))
+- ~~Shapes (as suggested in this [comment](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer#c26))~~

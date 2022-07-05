@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.shape.VoxelShape;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import static net.cyanmarine.simple_veinminer.SimpleVeinminer.SERVER_SIDE_VEINMINING;
+import static net.cyanmarine.simple_veinminer.SimpleVeinminer.getBlockHitResult;
 
 @Mixin (WorldRenderer.class)
 public abstract class WorldRendererMixin {
@@ -59,6 +61,9 @@ public abstract class WorldRendererMixin {
     ArrayList<BlockPos> blocksToOutline;
     ArrayList<BlockPos> beingBroken;
     float r, g, b, a;
+    BlockHitResult blockHitResult;
+
+    int delay = 0;
 
     @Inject(at = @At("HEAD"), method = "drawBlockOutline(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/entity/Entity;DDDLnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V", cancellable = true)
     public void drawBlockOutline(MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos pos, BlockState state, CallbackInfo ci) {
@@ -68,12 +73,14 @@ public abstract class WorldRendererMixin {
             SimpleConfig.SimpleConfigCopy worldConfig = SimpleVeinminerClient.getWorldConfig();
             if ((SimpleVeinminerClient.veinMineKeybind.isPressed() || (SimpleVeinminerClient.isVeinMiningServerSide && player.isSneaking())) && SimpleVeinminer.canVeinmine(player, world, pos, state, worldConfig.restrictions) && outline.outlineBlocks) {
                 ci.cancel();
+
                 Item hand = client.player.getMainHandStack().getItem();
-                if (!pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState) || !hand.equals(holding)) {
+
+                if (delay % 10 == 0 || !pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState) || !hand.equals(holding)) {
                     holding = hand;
                     Color outlineColor = outline.outlineColor;
 
-                    blocksToOutline = getBlocksToOutline(pos, state);
+                    blocksToOutline = getBlocksToOutline(pos, state, player);
                     currentlyOutliningPos = pos;
                     currentlyOutliningState = state;
 
@@ -81,6 +88,8 @@ public abstract class WorldRendererMixin {
                     g = outlineColor.getGreen() / 255.0f;
                     b = outlineColor.getBlue() / 255.0f;
                     a = 100.0f / 255.0f;
+
+                    delay = 0;
                 }
 
                 for (int i = 0; i < blocksToOutline.size(); i++) {
@@ -88,10 +97,14 @@ public abstract class WorldRendererMixin {
                     outline(matrices, vertexConsumer, entity, d, e, f, currentPos, world.getBlockState(currentPos), r, g, b, a);
                 }
 
+                delay++;
             } else if (currentlyOutliningPos != null) {
+                clearBlockBreakingProgressions();
                 currentlyOutliningPos = null;
                 currentlyOutliningState = null;
                 blocksToOutline = null;
+                holding = null;
+                delay = 0;
             }
         }
     }
@@ -108,8 +121,9 @@ public abstract class WorldRendererMixin {
                 if (beingBroken == null)
                     beingBroken = (ArrayList<BlockPos>) blocksToOutline.clone();
 
-                for (int i = 1; i < blocksToOutline.size(); i++) {
+                for (int i = 0; i < blocksToOutline.size(); i++) {
                     BlockPos currentPos = blocksToOutline.get(i);
+                    if (currentPos.equals(currentlyOutliningPos)) continue;
                     BlockBreakingInfo newBlockBreakingProgress = new BlockBreakingInfo(blockBreakingProgress.hashCode(), currentPos);
                     newBlockBreakingProgress.setStage(stage);
                     (blockBreakingProgressions.computeIfAbsent(currentPos.asLong(), (l) -> Sets.newTreeSet())).add(newBlockBreakingProgress);
@@ -134,8 +148,9 @@ public abstract class WorldRendererMixin {
 
     private void clearBlockBreakingProgressions() {
         if (beingBroken != null && blockBreakingProgressions != null)
-            for (int i = 1; i < beingBroken.size(); i++) {
+            for (int i = 0; i < beingBroken.size(); i++) {
                 BlockPos pos = beingBroken.get(i);
+                if (pos.equals(currentlyOutliningPos)) continue;
                 long l = pos.asLong();
                 SortedSet<BlockBreakingInfo> set = this.blockBreakingProgressions.get(l);
                 if (set != null) {
@@ -146,10 +161,8 @@ public abstract class WorldRendererMixin {
         beingBroken = null;
     }
 
-    private ArrayList<BlockPos> getBlocksToOutline(BlockPos pos, BlockState state) {
-        SimpleConfig.SimpleConfigCopy worldConfig = SimpleVeinminerClient.getWorldConfig();
-
-        ArrayList<BlockPos> willVeinmine = SimpleVeinminer.getBlocksToVeinmine(world, pos, state, SimpleVeinminer.getMaxBlocks(holding));
+    private ArrayList<BlockPos> getBlocksToOutline(BlockPos pos, BlockState state, PlayerEntity player) {
+        ArrayList<BlockPos> willVeinmine = SimpleVeinminer.getBlocksToVeinmine(pos, state, SimpleVeinminer.getMaxBlocks(holding), player);
         ArrayList<BlockPos> willOutline = new ArrayList<>();
 
         for (int i = 0; i < willVeinmine.size(); i++) {

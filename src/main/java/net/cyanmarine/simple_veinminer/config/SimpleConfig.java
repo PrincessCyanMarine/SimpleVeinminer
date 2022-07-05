@@ -51,11 +51,13 @@ public class SimpleConfig extends Config implements ConfigContainer {
         public boolean creativeBypass = true;
         @ConfigEntry(comment = "Will only allow to veinmine wood using an axe, dirt using a shovel, stone using a pickaxe, etc.")
         public boolean canOnlyUseSuitableTools = false;
+        public boolean allowShapedVeinmining = false;
 
         public void setCanVeinmineWithEmptyHand(boolean canVeinmineWithEmptyHand) {  this.canVeinmineWithEmptyHand = canVeinmineWithEmptyHand; syncConfig(); }
         public void setCreativeBypass(boolean creativeBypass) {  this.creativeBypass = creativeBypass; syncConfig(); }
-        public void setCanVeinmineHungry(boolean canVeinmineHungry) {this.canVeinmineHungry = canVeinmineHungry; syncConfig();}
-        public void setCanOnlyUseSuitableTools(boolean canOnlyUseSuitableTools) {this.canOnlyUseSuitableTools = canOnlyUseSuitableTools; syncConfig();}
+        public void setCanVeinmineHungry(boolean canVeinmineHungry) { this.canVeinmineHungry = canVeinmineHungry; syncConfig(); }
+        public void setCanOnlyUseSuitableTools(boolean canOnlyUseSuitableTools) { this.canOnlyUseSuitableTools = canOnlyUseSuitableTools; syncConfig(); }
+        public void setAllowShapedVeinmining(boolean newAllowShapedVeinmining) { this.allowShapedVeinmining = newAllowShapedVeinmining; syncConfig(); }
 
         @Transitive
         public RestrictionList restrictionList = new RestrictionList();

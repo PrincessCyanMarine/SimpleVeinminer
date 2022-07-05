@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 @Mixin(Block.class)
 public class BlockMixin {
-    @Inject(at = @At("TAIL"), method = "onBreak(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/entity/player/PlayerEntity;)V")
+    @Inject(at = @At("HEAD"), method = "onBreak(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/entity/player/PlayerEntity;)V")
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfo ci) {
         if (!world.isClient() && SimpleVeinminer.isVeinmining(player)) {
             if (SimpleVeinminer.canVeinmine(player, world, pos, state, SimpleVeinminer.getConfig().restrictions))
@@ -45,14 +45,15 @@ public class BlockMixin {
         double damageMultiplier = durability.damageMultiplier;
         if (handItem instanceof SwordItem) damageMultiplier *= durability.swordMultiplier;
 
-        ArrayList<BlockPos> blocksToBreak = SimpleVeinminer.getBlocksToVeinmine(world, pos, state, SimpleVeinminer.getMaxBlocks(handItem));
+        ArrayList<BlockPos> blocksToBreak = SimpleVeinminer.getBlocksToVeinmine(pos, state, SimpleVeinminer.getMaxBlocks(handItem), player);
 
         Block block = state.getBlock();
         double totalExhausted = (exhaustion.baseValue + (exhaustion.exhaustionBasedOnHardness ? (block.getHardness() * exhaustion.hardnessWeight) : 0));
 
-        for (int i = 1; i < blocksToBreak.size(); i++) {
+        for (int i = 0; i < blocksToBreak.size(); i++) {
             BlockPos currentPos = blocksToBreak.get(i);
             BlockState currentState = world.getBlockState(currentPos);
+            if (currentState.isAir()) continue;
             Block currentBlock = currentState.getBlock();
             BlockEntity currentBlockEntity = world.getBlockEntity(currentPos);
             //world.breakBlock(currentPos, false);

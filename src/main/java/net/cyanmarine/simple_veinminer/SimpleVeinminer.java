@@ -1,6 +1,12 @@
 package net.cyanmarine.simple_veinminer;
 
+import com.mojang.brigadier.Command;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import net.cyanmarine.simple_veinminer.client.SimpleVeinminerClient;
+import net.cyanmarine.simple_veinminer.commands.ArgumentTypeRegister;
+import net.cyanmarine.simple_veinminer.commands.CommandRegister;
+import net.cyanmarine.simple_veinminer.components.VeinminingShapeComponent;
 import net.cyanmarine.simple_veinminer.config.SimpleConfig;
 import net.cyanmarine.simple_veinminer.server.SimpleVeinminerServer;
 import net.fabricmc.api.EnvType;
@@ -8,7 +14,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
-import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -23,11 +28,15 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +47,7 @@ import java.util.UUID;
 
 public class SimpleVeinminer implements ModInitializer {
     public static final String MOD_ID = "simple_veinminer";
+    public static Identifier id(String name) { return new Identifier(MOD_ID, name); }
     public static final Logger LOGGER = LoggerFactory.getLogger("SimpleVeinMiner");
     private static ArrayList<UUID> playersVeinMining;
     static MinecraftServer server;
@@ -56,25 +66,68 @@ public class SimpleVeinminer implements ModInitializer {
         }
     }));
 
-    public static ArrayList<BlockPos> getBlocksToVeinmine(World world, BlockPos pos, BlockState state, int maxBlocks) {
+
+    public static final ComponentKey<VeinminingShapeComponent> VEINMINING_SHAPE = ComponentRegistry.getOrCreate(id("veinmining_shape"), VeinminingShapeComponent.class);
+
+    public static ArrayList<BlockPos> getBlocksToVeinmine(BlockPos pos, BlockState state, int maxBlocks, PlayerEntity player) {
+        World world = player.getWorld();
+
         Block compareTo = state.getBlock();
 
         ArrayList<BlockPos> blocksToBreak  = new ArrayList<>();
-        blocksToBreak.add(pos);
+
+        Constants.SHAPES shape = getConfig().restrictions.allowShapedVeinmining ? VEINMINING_SHAPE.get(player).getShape() : Constants.SHAPES.REGULAR;
+        int radius = VEINMINING_SHAPE.get(player).getRadius();
+        int max_depth = radius * 2;
+
 
         int i, x, y, z;
-        for (i = 0; i < maxBlocks && i < blocksToBreak.size(); i++) {
-            BlockPos currentPos = blocksToBreak.get(i);
-            for (x = -1; x <= 1; x++)
-                for (y = -1; y <= 1; y++)
-                    for (z = -1; z <= 1; z++) {
-                        if (blocksToBreak.size() >= maxBlocks) break;
-                        BlockPos testPos = currentPos.add(x, y, z);
-                        if (blocksToBreak.size() < maxBlocks && !blocksToBreak.contains(testPos) && world.getBlockState(testPos).getBlock().equals(compareTo)) blocksToBreak.add(testPos);
-                    }
+        switch (shape) {
+            case REGULAR:
+                blocksToBreak.add(pos);
+                for (i = 0; i < maxBlocks && i < blocksToBreak.size(); i++) {
+                    BlockPos currentPos = blocksToBreak.get(i);
+                    for (x = -1; x <= 1; x++)
+                        for (y = -1; y <= 1; y++)
+                            for (z = -1; z <= 1; z++) {
+                                if (blocksToBreak.size() >= maxBlocks) break;
+                                BlockPos testPos = currentPos.add(x, y, z);
+                                if (blocksToBreak.size() < maxBlocks && !blocksToBreak.contains(testPos) && world.getBlockState(testPos).getBlock().equals(compareTo))
+                                    blocksToBreak.add(testPos);
+                            }
+                }
+                break;
+            case HAMMER:
+                max_depth = 0;
+            /*case CUBE: */{
+                BlockHitResult blockHitResult = getBlockHitResult(player);
+                if (blockHitResult.getType() == HitResult.Type.BLOCK) {
+                    Direction.Axis axis = blockHitResult.getSide().getAxis();
+                    for (x = axis == Direction.Axis.X ? 0 : -radius; axis == Direction.Axis.X ? x <= max_depth : x <= radius; x++)
+                        for (y = axis == Direction.Axis.Y ? 0 : -radius; axis == Direction.Axis.Y ? y <= max_depth : y <= radius; y++)
+                            for (z = axis == Direction.Axis.Z ? 0 : -radius; axis == Direction.Axis.Z ? z <= max_depth : z <= radius; z++) {
+                                BlockPos testPos = blockHitResult.getBlockPos().add(x, y, z);
+                                if (!blocksToBreak.contains(testPos) && world.getBlockState(testPos).getBlock().equals(compareTo))
+                                    blocksToBreak.add(testPos);
+                            }
+                }
+                break;
+            }
+
         }
 
         return blocksToBreak;
+    }
+
+    public static BlockHitResult getBlockHitResult(PlayerEntity player) {
+        // Not stolen from Magna cough cough
+        Vec3d cameraPos = player.getCameraPosVec(1);
+        Vec3d rotation = player.getRotationVec(1);
+        // TODO reach-entity-attributes compatibility
+        double reachDistance = player.isCreative() ? 5.0F : 4.5F;
+        Vec3d combined = cameraPos.add(rotation.x * reachDistance, rotation.y * reachDistance, rotation.z * reachDistance);
+
+        return player.world.raycast(new RaycastContext(cameraPos, combined, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, player));
     }
 
     public static int getMaxBlocks(Item item) {
@@ -163,6 +216,9 @@ public class SimpleVeinminer implements ModInitializer {
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server1)->setVeinmining(handler.getPlayer(), false));
         ServerLifecycleEvents.SERVER_STARTED.register(server -> { SimpleVeinminer.server = server; LOGGER.info("New server");});
+
+        new ArgumentTypeRegister();
+        new CommandRegister();
 
         LOGGER.info("Simple VeinMiner initialized");
     }
