@@ -82,6 +82,7 @@ public class SimpleConfig extends Config implements ConfigContainer {
 
     @ConfigEntries(includeAll = true)
     public static class Exhaustion implements ConfigGroup {
+        public boolean exhaust = true;
         public double baseValue = 0.3;
         public boolean exhaustionBasedOnHardness = true;
         public double hardnessWeight = 0.1;

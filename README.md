@@ -38,7 +38,7 @@ I suggest messing around with them a bit to find what fits you best
 
 The easiest way to do that is by using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config), but both are optional
 
-# Shapes
+# Shapes (BETA)
 Using the /veinmining command, you can choose a shape (only hammer or regular as of now) to veinmine
 Shapes need to be turned on in the config as they are able to bypass the block limit
 
@@ -54,6 +54,7 @@ Feel free to add this to as many modpacks as you would like
 
 ## [v1.3.2]
 - Added the hammer veinmining shape
+- Added "Exhaust" config option
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/1.19/CHANGELOG.md)
 

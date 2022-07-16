@@ -62,7 +62,8 @@ public class BlockMixin {
             world.removeBlock(currentPos, false);
 
             if (shouldDamage(player, hand, currentBlock, durability)) hand.damage((int) (damageMultiplier), player.getRandom(), (ServerPlayerEntity) player);
-            player.addExhaustion((float) totalExhausted);
+            if (exhaustion.exhaust)
+                player.addExhaustion((float) totalExhausted);
 
             if (hand.isDamageable() &&  hand.getDamage() >= hand.getMaxDamage()) break;
         }

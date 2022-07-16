@@ -46,6 +46,7 @@
   "config.simple_veinminer.restrictions.restrictionList.listType.blacklist": "BLACKLIST",
 
   "config.simple_veinminer.exhaustion.baseValue": "Base value",
+  "config.simple_veinminer.exhaustion.exhaust": "Exhaust",
   "config.simple_veinminer.exhaustion.exhaustionBasedOnHardness": "Harder blocks exhaust more",
   "config.simple_veinminer.exhaustion.hardnessWeight": "How much hardness influences exhaustion",
 
