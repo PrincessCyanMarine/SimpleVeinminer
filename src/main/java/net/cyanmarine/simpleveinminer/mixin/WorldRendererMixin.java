@@ -100,31 +100,37 @@ public abstract class WorldRendererMixin {
                     for (BlockPos currentPos : blocksToHighlight)
                         outline(matrices, vertexConsumer, entity, d, e, f, currentPos, world.getBlockState(currentPos), red, green, blue, alpha);
                 else {
-                    for (BlockPos highlight : blocksToHighlight) {
-                        Tessellator tessellator = Tessellator.getInstance();
-                        BufferBuilder buffer = tessellator.getBuffer();
+                    Tessellator tessellator = Tessellator.getInstance();
+                    BufferBuilder buffer = tessellator.getBuffer();
 
-                        Camera camera = client.gameRenderer.getCamera();
+                    RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
+                    RenderSystem.setShaderTexture(0, SimpleVeinminer.getId("highlight.png"));
+                    RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+                    RenderSystem.depthFunc(GL11.GL_ALWAYS);
+                    RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+                    RenderSystem.enableBlend();
+                    RenderSystem.disableCull();
+
+                    Camera camera = client.gameRenderer.getCamera();
+
+                    alpha = Math.max(0.11f, alpha); // Prevents the highlight from being invisible
+
+                    buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+                    boolean b = SimpleVeinminerClient.getConfig().highlight.highlightAllSides;
+
+                    for (BlockPos highlight : blocksToHighlight) {
                         Vec3d targetPosition = new Vec3d(highlight.getX(), highlight.getY(), highlight.getZ());
                         Vec3d transformedPosition = targetPosition.subtract(camera.getPos());
+
                         MatrixStack matrixStack = new MatrixStack();
                         matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
                         matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
                         matrixStack.translate(transformedPosition.x, transformedPosition.y, transformedPosition.z);
                         Matrix4f positionMatrix = matrixStack.peek().getPositionMatrix();
 
-                        RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
-                        RenderSystem.setShaderTexture(0, SimpleVeinminer.getId("highlight.png"));
-                        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-                        RenderSystem.depthFunc(GL11.GL_ALWAYS);
-                        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-                        RenderSystem.enableBlend();
-                        RenderSystem.disableCull();
-
                         VoxelShape shape = world.getBlockState(highlight).getOutlineShape(world, highlight, ShapeContext.of(player));
 
-                        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
-                        boolean b = SimpleVeinminerClient.getConfig().highlight.highlightIndividualBlocks;
+
                         switch (outline.mode) {
                             case SHAPE -> shape.forEachBox((minX, minY, minZ, maxX, maxY, maxZ) -> {
                                 Box box = new Box(minX, minY, minZ, maxX, maxY, maxZ);
@@ -135,13 +141,13 @@ public abstract class WorldRendererMixin {
                             case CUBE_SHAPE ->
                                     drawBox(buffer, positionMatrix, red, green, blue, alpha, shape.getBoundingBox(), highlight, blocksToHighlight, b);
                         }
-
-                        tessellator.draw();
-
-                        RenderSystem.depthFunc(GL11.GL_LEQUAL);
-                        RenderSystem.disableBlend();
-                        RenderSystem.enableCull();
                     }
+
+                    tessellator.draw();
+
+                    RenderSystem.depthFunc(GL11.GL_LEQUAL);
+                    RenderSystem.disableBlend();
+                    RenderSystem.enableCull();
                 }
 
                 delay++;

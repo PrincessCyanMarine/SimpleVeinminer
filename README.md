@@ -1,5 +1,11 @@
 # Cyan's Veinminer
 
+## This is a ***veinmining*** mod
+### Veinmining mines veins of a same block. For mining 3x3s, look for a hammer/excavator mod
+### To activate veinmining, use the keybinding. Keybindings can be changed in the controls menu
+### Please read this page before asking questions
+
+---
 #### _The config file for v1.1.1+ is now simple_veinminer.conf_
 
 ### This Is my first actual mod, so some feedback would be appreciated
@@ -32,15 +38,26 @@ So, if you find anything wrong, please do [report it](https://github.com/Princes
 
 # Config
 
-The mod works out of the box but it has some config options you may find useful
+The mod works out of the box, but it has some config options you may find useful
 
 I suggest messing around with them a bit to find what fits you best
 
 The easiest way to do that is by using [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) and [Cloth Config](https://www.curseforge.com/minecraft/mc-mods/cloth-config), but both are optional
 
-# Shapes (BETA)
-Using the /veinmining command, you can choose a shape (only hammer or regular as of now) to veinmine
-Shapes need to be turned on in the config as they are able to bypass the block limit
+# Commands
+The config options can also be changed using /veinmining or /veinminingclient
+
+# Highlighting
+There are config options to highlight what blocks will be mined
+
+When using the "outline" mode, I recommend turning on "highlight only exposed". As the outline of non-exposed blocks can't be seen anyway
+
+Beware of the "highlight only exposed" option, as it can lag your game when highlighting a large number of blocks depending on your how powerful your computer is (Having "max blocks" set too high would lag (or even crash) your game when mining anyway. So be careful with that)
+
+# ~~Shapes (BETA)~~ Removed
+~~Using the /veinmining command, you can choose a shape (only hammer or regular as of now) to veinmine
+Shapes need to be turned on in the config as they are able to bypass the block limit~~
+
 
 # Found a bug? Has a suggestion? Any complaints?
 
@@ -50,11 +67,20 @@ Please leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-m
 
 Feel free to add this to as many modpacks as you would like
 
+# Other stuff
+If you are having trouble with "restrictions" configs. Make sure "Ignore restrictions when on creative mode" is set to false
+
 # Changelog
 
-## [v1.3.2]
-- Added the hammer veinmining shape
-- Added "Exhaust" config option
+## [v1.4.0] Comming soon
+### Added
+- Added more highlight options
+- Added "place in inventory" config option
+### Removed
+- Shapes
+### Changed
+- Updated for minecraft 1.19.4
+- "Outline" changed to "Highlight"
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/1.19/CHANGELOG.md)
 
@@ -62,4 +88,4 @@ Feel free to add this to as many modpacks as you would like
 # TODO? (No promises tho, college is tough and time is limited)
 - ~~Config to make different tier tools have different max blocks~~
 - ~~Optionally serverside only (as suggested in this [comment](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer#c22))~~
-- ~~Shapes (as suggested in this [comment](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer#c26))~~
+- ~~Shapes (as suggested in this [comment](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer#c26))~~ **(*Removed*)**

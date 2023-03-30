@@ -60,17 +60,17 @@ public class SimpleVeinminerClient implements ClientModInitializer {
         boolean b = ignoreNeighbors || pos == null || blocks == null;
 
         if (b || minZ > 0 || !blocks.contains(pos.north())) {
-            buffer.vertex(positionMatrix, minX, maxY, minZ).color(red, green, blue, alpha).texture(minX, maxY).next();
-            buffer.vertex(positionMatrix, minX, minY, minZ).color(red, green, blue, alpha).texture(minX, minY).next();
-            buffer.vertex(positionMatrix, maxX, minY, minZ).color(red, green, blue, alpha).texture(maxX, minY).next();
-            buffer.vertex(positionMatrix, maxX, maxY, minZ).color(red, green, blue, alpha).texture(maxX, maxY).next();
+            buffer.vertex(positionMatrix, minX, maxY, minZ).color(red, green, blue, alpha).texture(minX, minY).next();
+            buffer.vertex(positionMatrix, minX, minY, minZ).color(red, green, blue, alpha).texture(minX, maxY).next();
+            buffer.vertex(positionMatrix, maxX, minY, minZ).color(red, green, blue, alpha).texture(maxX, maxY).next();
+            buffer.vertex(positionMatrix, maxX, maxY, minZ).color(red, green, blue, alpha).texture(maxX, minY).next();
         }
 
         if (b || maxZ < 1 || !blocks.contains(pos.south())) {
-            buffer.vertex(positionMatrix, minX, maxY, maxZ).color(red, green, blue, alpha).texture(minX, maxY).next();
-            buffer.vertex(positionMatrix, minX, minY, maxZ).color(red, green, blue, alpha).texture(minX, minY).next();
-            buffer.vertex(positionMatrix, maxX, minY, maxZ).color(red, green, blue, alpha).texture(maxX, minY).next();
-            buffer.vertex(positionMatrix, maxX, maxY, maxZ).color(red, green, blue, alpha).texture(maxX, maxY).next();
+            buffer.vertex(positionMatrix, minX, maxY, maxZ).color(red, green, blue, alpha).texture(minX, minY).next();
+            buffer.vertex(positionMatrix, minX, minY, maxZ).color(red, green, blue, alpha).texture(minX, maxY).next();
+            buffer.vertex(positionMatrix, maxX, minY, maxZ).color(red, green, blue, alpha).texture(maxX, maxY).next();
+            buffer.vertex(positionMatrix, maxX, maxY, maxZ).color(red, green, blue, alpha).texture(maxX, minY).next();
         }
 
         if (b || maxX < 1 || !blocks.contains(pos.east())) {

@@ -9,6 +9,7 @@ import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class SimpleConfig extends Config implements ConfigContainer {
     }
 
     public static void syncConfig() {
+        SimpleVeinminer.getConfig().save();
         SimpleVeinminer.SyncConfigForAllPlayers();
     }
 
@@ -76,10 +78,9 @@ public class SimpleConfig extends Config implements ConfigContainer {
     public static class Restrictions implements ConfigGroup {
         public boolean canVeinmineHungry = false;
         public boolean canVeinmineWithEmptyHand = true;
-        public boolean creativeBypass = true;
+        public boolean creativeBypass = false;
         @ConfigEntry(comment = "Will only allow to veinmine wood using an axe, dirt using a shovel, stone using a pickaxe, etc.")
         public boolean canOnlyUseSuitableTools = false;
-        public boolean allowShapedVeinmining = false;
         @Transitive
         public RestrictionList restrictionList = new RestrictionList();
 
@@ -103,11 +104,6 @@ public class SimpleConfig extends Config implements ConfigContainer {
             syncConfig();
         }
 
-        public void setAllowShapedVeinmining(boolean newAllowShapedVeinmining) {
-            this.allowShapedVeinmining = newAllowShapedVeinmining;
-            syncConfig();
-        }
-
         @ConfigEntries(includeAll = false)
         public static class RestrictionList implements ConfigGroup {
             @ConfigEntry(comment = "Valid values are NONE, BLACKLIST, and WHITELIST")
@@ -118,6 +114,22 @@ public class SimpleConfig extends Config implements ConfigContainer {
 
             public void setList(List<String> list) {
                 this.list = list;
+                syncConfig();
+            }
+
+            public void add(String value) {
+                SimpleVeinminer.LOGGER.info(value);
+                if (this.list.contains(value)) return;
+                // this.list.add(value); // Doesn't work for some reason
+                ArrayList<String> newList = new ArrayList<>(this.list);
+                newList.add(value);
+                this.setList(newList);
+                SimpleVeinminer.LOGGER.info(value);
+                syncConfig();
+            }
+
+            public void remove(String value) {
+                this.list.remove(value);
                 syncConfig();
             }
 
@@ -139,6 +151,26 @@ public class SimpleConfig extends Config implements ConfigContainer {
         public double baseValue = 0.3;
         public boolean exhaustionBasedOnHardness = true;
         public double hardnessWeight = 0.1;
+
+        public void setExhaust(boolean exhaust) {
+            this.exhaust = exhaust;
+            SimpleVeinminer.getConfig().save();
+        }
+
+        public void setBaseValue(double baseValue) {
+            this.baseValue = baseValue;
+            SimpleVeinminer.getConfig().save();
+        }
+
+        public void setExhaustionBasedOnHardness(boolean exhaustionBasedOnHardness) {
+            this.exhaustionBasedOnHardness = exhaustionBasedOnHardness;
+            SimpleVeinminer.getConfig().save();
+        }
+
+        public void setHardnessWeight(double hardnessWeight) {
+            this.hardnessWeight = hardnessWeight;
+            SimpleVeinminer.getConfig().save();
+        }
     }
 
     @ConfigEntries(includeAll = true)
@@ -146,6 +178,21 @@ public class SimpleConfig extends Config implements ConfigContainer {
         public double damageMultiplier = 1.0;
         public double swordMultiplier = 2.0;
         public boolean consumeOnInstantBreak = false;
+
+        public void setDamageMultiplier(double damageMultiplier) {
+            this.damageMultiplier = damageMultiplier;
+            SimpleVeinminer.getConfig().save();
+        }
+
+        public void setSwordMultiplier(double swordMultiplier) {
+            this.swordMultiplier = swordMultiplier;
+            SimpleVeinminer.getConfig().save();
+        }
+
+        public void setConsumeOnInstantBreak(boolean consumeOnInstantBreak) {
+            this.consumeOnInstantBreak = consumeOnInstantBreak;
+            SimpleVeinminer.getConfig().save();
+        }
     }
 
     public static class SimpleConfigCopy {

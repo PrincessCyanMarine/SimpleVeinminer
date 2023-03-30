@@ -11,12 +11,6 @@ public enum ScreenBuilderType {
             return new ClothConfigScreenBuilder(() -> ConfigBuilder.create().setTransparentBackground(true).setShouldListSmoothScroll(true).setShouldTabsSmoothScroll(true));
         }
     };
-    /*COAT() {
-        @Override
-        public ConfigScreenBuilder<?> create() {
-            return new CoatScreenBuilder();
-        }
-    };*/
 
     public abstract ConfigScreenBuilder<?> create();
 

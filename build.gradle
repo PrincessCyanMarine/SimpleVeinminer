@@ -42,6 +42,7 @@ dependencies {
     // CompleteConfig
     modImplementation("com.github.Lortseam.completeconfig:base:${project.completeconfig_version}")
     modImplementation("com.github.Lortseam.completeconfig:gui-cloth:${project.completeconfig_version}")
+
     // modImplementation("com.gitlab.Lortseam.completeconfig:gui-coat:${project.completeconfig_version}")
 
     include("com.github.Lortseam.completeconfig:base:${project.completeconfig_version}")

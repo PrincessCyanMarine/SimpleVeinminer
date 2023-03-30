@@ -52,8 +52,8 @@ public class SimpleConfigClient extends SimpleConfig {
         this.save();
     }
 
-    public void setHighlightIndividualBlocks(boolean highlightIndividualBlocks) {
-        this.highlight.highlightIndividualBlocks = highlightIndividualBlocks;
+    public void setHighlightAllSides(boolean highlightAllSides) {
+        this.highlight.highlightAllSides = highlightAllSides;
         this.save();
     }
 
@@ -72,7 +72,7 @@ public class SimpleConfigClient extends SimpleConfig {
         @ConfigEntry.BoundedInteger(min = 0, max = 100)
         public int opacity = 39;
         public MODES mode = MODES.OUTLINE;
-        public boolean highlightIndividualBlocks = false;
+        public boolean highlightAllSides = false;
         public boolean onlyExposed = true;
 
 

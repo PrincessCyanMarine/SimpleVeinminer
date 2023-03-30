@@ -2,6 +2,7 @@ package net.cyanmarine.simpleveinminer;
 
 import net.cyanmarine.simpleveinminer.client.SimpleVeinminerClient;
 import net.cyanmarine.simpleveinminer.commands.CommandRegister;
+import net.cyanmarine.simpleveinminer.commands.argumenttypes.ArgumentTypes;
 import net.cyanmarine.simpleveinminer.config.SimpleConfig;
 import net.cyanmarine.simpleveinminer.server.SimpleVeinminerServer;
 import net.fabricmc.api.EnvType;
@@ -236,6 +237,7 @@ public class SimpleVeinminer implements ModInitializer {
             LOGGER.info("New server");
         });
 
+        new ArgumentTypes();
         new CommandRegister();
 
         LOGGER.info("Simple VeinMiner initialized");

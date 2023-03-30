@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import me.shedaniel.math.Color;
 import net.cyanmarine.simpleveinminer.client.SimpleVeinminerClient;
+import net.cyanmarine.simpleveinminer.commands.argumenttypes.HighlightModesArgumentType;
 import net.cyanmarine.simpleveinminer.config.SimpleConfigClient;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.text.Text;
@@ -31,20 +32,20 @@ public class CommandRegisterClient {
                                     ).then(
                                             literal("mode")
                                                     .then(
-                                                            argument("value", IntegerArgumentType.integer(0, 3))
+                                                            argument("value", HighlightModesArgumentType.highlightModes())
                                                                     .executes((context) -> {
-                                                                        SimpleConfigClient.Highlight.MODES mode = SimpleConfigClient.Highlight.MODES.values()[IntegerArgumentType.getInteger(context, "value")];
+                                                                        SimpleConfigClient.Highlight.MODES mode = HighlightModesArgumentType.getHighlightMode(context, "value");
                                                                         SimpleVeinminerClient.getConfig().setMode(mode);
                                                                         context.getSource().getPlayer().sendMessage(Text.of("Highlight mode set to " + mode.name()));
                                                                         return 1;
                                                                     })
                                                     )
                                     ).then(
-                                            literal("renderIndividualBlocks").then(
+                                            literal("highlightAllSides").then(
                                                     argument("value", BoolArgumentType.bool()).executes((context) -> {
-                                                        boolean renderIndividualBlocks = BoolArgumentType.getBool(context, "value");
-                                                        SimpleVeinminerClient.getConfig().setHighlightIndividualBlocks(renderIndividualBlocks);
-                                                        context.getSource().getPlayer().sendMessage(Text.of("Highlight \"renderIndividualBlocks\" set to " + (renderIndividualBlocks ? "true" : "false")));
+                                                        boolean highlightAllSides = BoolArgumentType.getBool(context, "value");
+                                                        SimpleVeinminerClient.getConfig().setHighlightAllSides(highlightAllSides);
+                                                        context.getSource().getPlayer().sendMessage(Text.of("Highlight \"highlightAllSides\" set to " + (highlightAllSides ? "true" : "false")));
                                                         return 1;
                                                     })
                                             )
