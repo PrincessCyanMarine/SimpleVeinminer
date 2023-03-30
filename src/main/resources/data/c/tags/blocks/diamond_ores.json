@@ -1,4 +1,6 @@
 {
   "replace": false,
-  "values": ["#minecraft:diamond_ores"]
+  "values": [
+    "#minecraft:diamond_ores"
+  ]
 }

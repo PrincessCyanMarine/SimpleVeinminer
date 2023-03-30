@@ -1,4 +1,4 @@
-package net.cyanmarine.simple_veinminer.gui;
+package net.cyanmarine.simpleveinminer.gui;
 
 import me.lortseam.completeconfig.gui.ConfigScreenBuilder;
 import me.lortseam.completeconfig.gui.cloth.ClothConfigScreenBuilder;
