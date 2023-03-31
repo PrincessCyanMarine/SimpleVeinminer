@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
  -->
 
-## [v1.4.0]
+## [v1.4.0] (BETA)
 ### Added
 - Added more highlight options
 - Added "place in inventory" config option

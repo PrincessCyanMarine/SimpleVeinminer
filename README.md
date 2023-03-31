@@ -72,17 +72,18 @@ If you are having trouble with "restrictions" configs. Make sure "Ignore restric
 
 # Changelog
 
-## [v1.4.0] Comming soon
+## [v1.4.0] (BETA)
 ### Added
 - Added more highlight options
 - Added "place in inventory" config option
+- Added commands to change config options
 ### Removed
 - Shapes
 ### Changed
 - Updated for minecraft 1.19.4
 - "Outline" changed to "Highlight"
 
-[Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/1.19/CHANGELOG.md)
+[Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/1.19.4/CHANGELOG.md)
 
 
 # TODO? (No promises tho, college is tough and time is limited)
