@@ -142,8 +142,8 @@ public class CommandRegister {
 
                                         if (list.size() == 0) {
                                             context.getSource().sendMessage(Text.of("List is empty"));
-                                            context.getSource().sendMessage(Text.of("To add blocks, use \"/veinminer restrictions list add <block>\""));
-                                            context.getSource().sendMessage(Text.of("To remove blocks, use \"/veinminer restrictions list remove <block>\""));
+                                            context.getSource().sendMessage(Text.of("To add blocks, use \"/veinminer restrictions list add <id/tag>\""));
+                                            context.getSource().sendMessage(Text.of("To remove blocks, use \"/veinminer restrictions list remove <id/tag>\""));
                                             context.getSource().sendMessage(Text.of("To clear the list, use \"/veinminer restrictions list clear\""));
                                             return 1;
                                         } else

@@ -12,6 +12,7 @@ import net.cyanmarine.simpleveinminer.config.SimpleConfigClient;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
@@ -47,7 +48,9 @@ public abstract class WorldRendererMixin {
     ArrayList<BlockPos> blocksToHighlight;
     ArrayList<BlockPos> beingBroken;
     float red, green, blue, alpha;
-    int delay = 0;
+    int delay1 = 0;
+    int delay2 = 0;
+    boolean resetCountdown = false;
     @Shadow
     @Nullable
     private ClientWorld world;
@@ -78,7 +81,7 @@ public abstract class WorldRendererMixin {
                 assert client.player != null;
                 Item hand = client.player.getMainHandStack().getItem();
 
-                if (delay % 20 == 0 || !pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState) || !hand.equals(holding)) {
+                if (delay1 % 20 == 0 || !pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState) || !hand.equals(holding)) {
                     holding = hand;
                     Color outlineColor = outline.color;
 
@@ -91,7 +94,9 @@ public abstract class WorldRendererMixin {
                     blue = outlineColor.getBlue() / 255.0f;
                     alpha = ((float) outline.opacity) / 100.0f;
 
-                    delay = 0;
+                    delay1 = 0;
+                    delay2 = 0;
+                    resetCountdown = true;
                 }
 
                 assert world != null;
@@ -150,22 +155,38 @@ public abstract class WorldRendererMixin {
                     RenderSystem.enableCull();
                 }
 
-                delay++;
+                delay1++;
             } else if (currentlyOutliningPos != null) {
-                clearBlockBreakingProgressions();
-                currentlyOutliningPos = null;
-                currentlyOutliningState = null;
-                blocksToHighlight = null;
-                holding = null;
-                delay = 0;
+                reset();
             }
         }
     }
 
+    private void reset() {
+        clearBlockBreakingProgressions();
+        currentlyOutliningPos = null;
+        currentlyOutliningState = null;
+        blocksToHighlight = null;
+        holding = null;
+        delay1 = 0;
+        delay2 = 0;
+        resetCountdown = false;
+    }
+
     @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/render/WorldRenderer;render(Lnet/minecraft/client/util/math/MatrixStack;FJZLnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/GameRenderer;Lnet/minecraft/client/render/LightmapTextureManager;Lorg/joml/Matrix4f;)V")
     public void renderInject(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f positionMatrix, CallbackInfo ci) {
+        ClientPlayerEntity player = client.player;
+        if (player == null || world == null) return;
+        if (resetCountdown && ++delay2 % 20 == 0) {
+            if (world.getBlockState(SimpleVeinminer.getBlockHitResult(client.player).getBlockPos()).isAir()) {
+                reset();
+                return;
+            }
+            delay2 = 0;
+        }
+
         clearBlockBreakingProgressions();
-        if (SimpleVeinminerClient.getConfig().showMiningProgress && blocksToHighlight != null && currentlyOutliningPos != null) {
+        if (blocksToHighlight != null && currentlyOutliningPos != null && SimpleVeinminerClient.veinMining && SimpleVeinminerClient.getConfig().showMiningProgress) {
             SortedSet<BlockBreakingInfo> blockBreakingSet = blockBreakingProgressions.get(currentlyOutliningPos.asLong());
             if (blockBreakingSet != null) {
                 BlockBreakingInfo blockBreakingProgress = blockBreakingSet.last();

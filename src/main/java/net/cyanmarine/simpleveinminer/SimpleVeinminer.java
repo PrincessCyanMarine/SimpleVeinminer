@@ -95,7 +95,6 @@ public class SimpleVeinminer implements ModInitializer {
         // Not stolen from Magna cough cough
         Vec3d cameraPos = player.getCameraPosVec(1);
         Vec3d rotation = player.getRotationVec(1);
-        // TODO reach-entity-attributes compatibility
         double reachDistance = player.isCreative() ? 5.0F : 4.5F;
         Vec3d combined = cameraPos.add(rotation.x * reachDistance, rotation.y * reachDistance, rotation.z * reachDistance);
 

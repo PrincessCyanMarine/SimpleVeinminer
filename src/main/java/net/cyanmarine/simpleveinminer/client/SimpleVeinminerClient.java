@@ -38,7 +38,7 @@ public class SimpleVeinminerClient implements ClientModInitializer {
     static SimpleConfig.SimpleConfigCopy worldConfig;
     private static SimpleConfigClient config;
     public static KeyBinding veinMineKeybind = KeyBindingHelper.registerKeyBinding(new StickyKeyBinding("key.simpleveinminer.veinminingKey", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.simpleveinminer.veinminerCategory", () -> config.keybindToggles));
-    public boolean veinMining;
+    public static boolean veinMining;
 
     public static SimpleConfig.SimpleConfigCopy getWorldConfig() {
         if (worldConfig == null) return SimpleConfig.SimpleConfigCopy.from(config);
@@ -155,46 +155,6 @@ public class SimpleVeinminerClient implements ClientModInitializer {
                 isVeinMiningServerSide = newValue;
             });
         });
-
-        /*WorldRenderEvents.END.register(context -> {
-            if (blocksToHighlight == null) return;
-            MinecraftClient mc = MinecraftClient.getInstance();
-            World world = mc.world;
-            PlayerEntity player = mc.player;
-            if (world == null || player == null) return;
-            Camera camera = context.camera();
-
-            SimpleConfigClient.Outline outline = config.outline;
-            Color color = outline.outlineColor;
-            float red   = ((float) color.getRed()) / 255.0f;
-            float blue  = ((float) color.getBlue()) / 255.0f;
-            float green = ((float) color.getGreen()) / 255.0f;
-            float alpha = ((float) outline.opacity) / 100.0f;
-
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder buffer = tessellator.getBuffer();
-
-
-            RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
-            RenderSystem.setShaderTexture(0, SimpleVeinminer.getId("highlight.png"));
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            RenderSystem.disableCull();
-            RenderSystem.depthFunc(GL11.GL_ALWAYS);
-            RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-            RenderSystem.enableBlend();
-
-            buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
-
-
-
-            tessellator.draw();
-
-
-            RenderSystem.disableBlend();
-            RenderSystem.depthFunc(GL11.GL_LEQUAL);
-            RenderSystem.enableCull();
-            blocksToHighlight = null;
-        });*/
 
         LOGGER.info("Simple VeinMiner initialized");
     }
