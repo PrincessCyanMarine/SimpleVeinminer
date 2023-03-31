@@ -16,6 +16,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
  -->
 
+## [v1.4.0]
+### Added
+- Added more highlight options
+- Added "place in inventory" config option
+- Added commands to change config options
+### Removed
+- Shapes
+### Changed
+- Updated for minecraft 1.19.4
+- "Outline" changed to "Highlight"
+
 ## [v1.3.2]
 - Added the hammer veinmining shape
 - Added "Exhaust" config option

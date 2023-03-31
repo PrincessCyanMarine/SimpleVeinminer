@@ -1,4 +1,4 @@
-package net.cyanmarine.simple_veinminer.gui;
+package net.cyanmarine.simpleveinminer.gui;
 
 import me.lortseam.completeconfig.gui.ConfigScreenBuilder;
 import me.lortseam.completeconfig.gui.cloth.ClothConfigScreenBuilder;
@@ -11,12 +11,6 @@ public enum ScreenBuilderType {
             return new ClothConfigScreenBuilder(() -> ConfigBuilder.create().setTransparentBackground(true).setShouldListSmoothScroll(true).setShouldTabsSmoothScroll(true));
         }
     };
-    /*COAT() {
-        @Override
-        public ConfigScreenBuilder<?> create() {
-            return new CoatScreenBuilder();
-        }
-    };*/
 
     public abstract ConfigScreenBuilder<?> create();
 
