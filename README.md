@@ -25,6 +25,12 @@ Available on [curseforge](curseforge.com/minecraft/mc-mods/simple-veinminer) and
 
 ##### As this is my first mod, I'm not 100% sure if I've done everything the most efficient way possible, but I did my best
 
+
+# Found a bug? Has a suggestion? Any complaints?
+
+Please leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [modrinth](https://modrinth.com/mod/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues) on Github
+
+
 # Enchantments and multiplayer
 
 I haven't tested any modded enchantments (yet), but the vanilla ones work correctly
@@ -59,10 +65,6 @@ If you are confused about the difference between highlighting modes, I recommend
 
 # ~~Shapes (BETA)~~ Removed
 
-
-# Found a bug? Has a suggestion? Any complaints?
-
-Please leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [modrinth](https://modrinth.com/mod/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues) on Github
 
 # Modpacks
 
