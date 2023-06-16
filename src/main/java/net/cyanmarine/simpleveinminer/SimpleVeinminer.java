@@ -98,7 +98,7 @@ public class SimpleVeinminer implements ModInitializer {
         double reachDistance = player.isCreative() ? 5.0F : 4.5F;
         Vec3d combined = cameraPos.add(rotation.x * reachDistance, rotation.y * reachDistance, rotation.z * reachDistance);
 
-        return player.world.raycast(new RaycastContext(cameraPos, combined, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, player));
+        return player.getWorld().raycast(new RaycastContext(cameraPos, combined, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, player));
     }
 
     public static int getMaxBlocks(Item item) {
@@ -187,7 +187,7 @@ public class SimpleVeinminer implements ModInitializer {
     }
 
     public static boolean isVeinmining(PlayerEntity player) {
-        return (player.isSneaking() && player.world.getGameRules().getBoolean(SERVER_SIDE_VEINMINING)) || playersVeinMining.contains(player.getUuid());
+        return (player.isSneaking() && player.getWorld().getGameRules().getBoolean(SERVER_SIDE_VEINMINING)) || playersVeinMining.contains(player.getUuid());
     }
 
     private static void setVeinmining(PlayerEntity player, boolean isVeinMining) {

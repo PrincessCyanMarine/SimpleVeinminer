@@ -5,6 +5,7 @@ import me.lortseam.completeconfig.api.ConfigEntries;
 import me.lortseam.completeconfig.api.ConfigEntry;
 import me.lortseam.completeconfig.api.ConfigGroup;
 import me.lortseam.completeconfig.data.Config;
+import me.lortseam.completeconfig.data.Entry;
 import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
@@ -31,6 +32,15 @@ public class SimpleConfig extends Config implements ConfigContainer {
 
     public static SimpleConfigCopy copy(PacketByteBuf buf) {
         return new SimpleConfigCopy(buf);
+    }
+
+    public void reset() {
+        this.placeInInventory = false;
+        this.limits = new Limits();
+        this.restrictions = new Restrictions();
+        this.exhaustion = new Exhaustion();
+        this.durability = new Durability();
+        syncConfig();
     }
 
     public static void syncConfig() {

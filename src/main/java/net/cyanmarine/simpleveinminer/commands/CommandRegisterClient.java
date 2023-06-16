@@ -28,7 +28,11 @@ public class CommandRegisterClient {
                                                                         context.getSource().getPlayer().sendMessage(Text.of("Highlight opacity set to " + opacity));
                                                                         return 1;
                                                                     })
-                                                    )
+                                                    ).executes((context) -> {
+                                                        int opacity = SimpleVeinminerClient.getConfig().highlight.opacity;
+                                                        context.getSource().getPlayer().sendMessage(Text.of("Highlight opacity is " + opacity));
+                                                        return 1;
+                                                    })
                                     ).then(
                                             literal("mode")
                                                     .then(
@@ -36,10 +40,14 @@ public class CommandRegisterClient {
                                                                     .executes((context) -> {
                                                                         SimpleConfigClient.Highlight.MODES mode = HighlightModesArgumentType.getHighlightMode(context, "value");
                                                                         SimpleVeinminerClient.getConfig().setMode(mode);
-                                                                        context.getSource().getPlayer().sendMessage(Text.of("Highlight mode set to " + mode.name()));
+                                                                        context.getSource().getPlayer().sendMessage(Text.of("Highlight mode set to " + mode.name().toUpperCase()));
                                                                         return 1;
                                                                     })
-                                                    )
+                                                    ).executes((context) -> {
+                                                        SimpleConfigClient.Highlight.MODES mode = SimpleVeinminerClient.getConfig().highlight.mode;
+                                                        context.getSource().getPlayer().sendMessage(Text.of("Highlight mode is " + mode.name()));
+                                                        return 1;
+                                                    })
                                     ).then(
                                             literal("highlightAllSides").then(
                                                     argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -48,7 +56,11 @@ public class CommandRegisterClient {
                                                         context.getSource().getPlayer().sendMessage(Text.of("Highlight \"highlightAllSides\" set to " + (highlightAllSides ? "true" : "false")));
                                                         return 1;
                                                     })
-                                            )
+                                            ).executes((context)->{
+                                                boolean highlightAllSides = SimpleVeinminerClient.getConfig().highlight.highlightAllSides;
+                                                context.getSource().getPlayer().sendMessage(Text.of((highlightAllSides ? "Highlighting all sides" : "Not highlighting connected sides")));
+                                                return 1;
+                                            })
                                     ).then(
                                             literal("onlyExposed").then(
                                                     argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -57,7 +69,11 @@ public class CommandRegisterClient {
                                                         context.getSource().getPlayer().sendMessage(Text.of("Highlight \"onlyExposed\" set to " + (onlyExposed ? "true" : "false")));
                                                         return 1;
                                                     })
-                                            )
+                                            ).executes((context) -> {
+                                                boolean onlyExposed = SimpleVeinminerClient.getConfig().highlight.onlyExposed;
+                                                context.getSource().getPlayer().sendMessage(Text.of((onlyExposed ? "Highlighting only exposed blocks" : "Highlighting all blocks")));
+                                                return 1;
+                                            })
                                     ).then(
                                             literal("color").then(
                                                     argument("r", IntegerArgumentType.integer(0, 255)).then(
@@ -72,7 +88,11 @@ public class CommandRegisterClient {
                                                                     })
                                                             )
                                                     )
-                                            )
+                                            ).executes(context->{
+                                                Color color = SimpleVeinminerClient.getConfig().highlight.color;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Highlight color is " + color.getRed() + ", " + color.getGreen() + ", " + color.getBlue()));
+                                                return 1;
+                                            })
                                     ).then(
                                             literal("doHighlight").then(
                                                     argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -81,7 +101,11 @@ public class CommandRegisterClient {
                                                         context.getSource().getPlayer().sendMessage(Text.of("Veinmining \"doHighlight\" set to " + (outlineBlocks ? "true" : "false")));
                                                         return 1;
                                                     })
-                                            )
+                                            ).executes(context-> {
+                                                boolean doHighlight = SimpleVeinminerClient.getConfig().highlight.doHighlight;
+                                                context.getSource().getPlayer().sendMessage(Text.of((doHighlight ? "Highlighting blocks" : "Not highlighting blocks")));
+                                                return 1;
+                                            })
                                     )
                     ).then(
                             literal("keybindToggles").then(
@@ -91,7 +115,11 @@ public class CommandRegisterClient {
                                         context.getSource().getPlayer().sendMessage(Text.of("Veinmining \"keybindToggles\" set to " + (keybindToggles ? "true" : "false")));
                                         return 1;
                                     })
-                            )
+                            ).executes(context-> {
+                                boolean keybindToggles = SimpleVeinminerClient.getConfig().keybindToggles;
+                                context.getSource().getPlayer().sendMessage(Text.of((keybindToggles ? "Keybind on toggle mode" : "Keybind on hold mode")));
+                                return 1;
+                            })
                     ).then(
                             literal("showMiningProgress").then(
                                     argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -100,7 +128,11 @@ public class CommandRegisterClient {
                                         context.getSource().getPlayer().sendMessage(Text.of("Veinmining \"showMiningProgress\" set to " + (showMiningProgress ? "true" : "false")));
                                         return 1;
                                     })
-                            )
+                            ).executes(context -> {
+                                boolean showMiningProgress = SimpleVeinminerClient.getConfig().showMiningProgress;
+                                context.getSource().getPlayer().sendMessage(Text.of((showMiningProgress ? "Showing mining progress" : "Not showing mining progress")));
+                                return 1;
+                            })
                     ).then(
                             literal("showRestrictionMessages").then(
                                     argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -109,7 +141,17 @@ public class CommandRegisterClient {
                                         context.getSource().getPlayer().sendMessage(Text.of("Veinmining \"showRestrictionMessages\" set to " + (showRestrictionMessages ? "true" : "false")));
                                         return 1;
                                     })
-                            )
+                            ).executes(context -> {
+                                boolean showRestrictionMessages = SimpleVeinminerClient.getConfig().showRestrictionMessages;
+                                context.getSource().getPlayer().sendMessage(Text.of((showRestrictionMessages ? "Showing restriction messages" : "Not showing restriction messages")));
+                                return 1;
+                            })
+                    ).then(
+                            literal("reset").executes(context-> {
+                                SimpleVeinminerClient.getConfig().resetClient();
+                                context.getSource().getPlayer().sendMessage(Text.of("Resetting client config to default values"));
+                                return 1;
+                            })
                     )
             );
         });

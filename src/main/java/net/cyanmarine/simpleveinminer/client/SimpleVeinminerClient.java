@@ -108,8 +108,10 @@ public class SimpleVeinminerClient implements ClientModInitializer {
         config = new SimpleConfigClient();
         config.load();
         worldConfig = SimpleConfig.SimpleConfigCopy.from(config);
-        if (FabricLoader.getInstance().isModLoaded("cloth-config"))
+        /*if (FabricLoader.getInstance().isModLoaded("cloth-config"))
             ConfigScreenBuilder.setMain(SimpleVeinminer.MOD_ID, ScreenBuilderType.CLOTH_CONFIG.create());
+        else if (FabricLoader.getInstance().isModLoaded("yet-another-config-lib"))
+            ConfigScreenBuilder.setMain(SimpleVeinminer.MOD_ID, ScreenBuilderType.YACL.create());*/
         //else
         //ConfigScreenBuilder.setMain(SimpleVeinminer.MOD_ID, new CoatScreenBuilder());
 

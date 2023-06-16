@@ -17,6 +17,14 @@ public class SimpleConfigClient extends SimpleConfig {
     @Transitive
     public Highlight highlight = new Highlight();
 
+    public void resetClient() {
+        this.showMiningProgress = true;
+        this.showRestrictionMessages = true;
+        this.keybindToggles = false;
+        this.highlight = new Highlight();
+        this.save();
+    }
+
     public void setShowMiningProgress(boolean showMiningProgress) {
         this.showMiningProgress = showMiningProgress;
         this.save();

@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
  -->
 
+## [v1.4.1]
+### Added
+- More commands
+### Changed
+- Updated for minecraft 1.20+
+- Won't drop xp when mining with an inadequate tool (e.g. using a wooden pickaxe to mine diamond ore)
+### Removed
+- Cloth config integration (for now)
+
+
 ## [v1.4.0] (BETA)
 ### Added
 - Added more highlight options
