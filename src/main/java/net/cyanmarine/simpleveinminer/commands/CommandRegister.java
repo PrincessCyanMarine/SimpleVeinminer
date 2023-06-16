@@ -3,6 +3,7 @@ package net.cyanmarine.simpleveinminer.commands;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import me.lortseam.completeconfig.data.Entry;
 import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.cyanmarine.simpleveinminer.commands.argumenttypes.BlockIdOrTagArgumentType;
 import net.cyanmarine.simpleveinminer.commands.argumenttypes.RestrictionListArgumentType;
@@ -30,7 +31,11 @@ public class CommandRegister {
                                         context.getSource().sendMessage(Text.of("Veinmining \"place in inventory\" set to " + (placeInInventory ? "true" : "false")));
                                         return 1;
                                     })
-                            )
+                            ).executes(context -> {
+                                boolean placeInInventory = !SimpleVeinminer.getConfig().placeInInventory;
+                                context.getSource().sendMessage(Text.of(placeInInventory ? "Placing blocks in inventory" : "Dropping blocks on the ground"));
+                                return 1;
+                            })
                     ).then(
                             literal("limits").then(
                                     literal("maxBlocks")
@@ -42,7 +47,11 @@ public class CommandRegister {
                                                                 context.getSource().sendMessage(Text.of("Veinmining \"max blocks\" set to " + maxBlocks));
                                                                 return 1;
                                                             })
-                                            )
+                                            ).executes((context) -> {
+                                                int maxBlocks = SimpleVeinminer.getConfig().limits.maxBlocks;
+                                                context.getSource().sendMessage(Text.of("Veinmining \"max blocks\" is " + maxBlocks));
+                                                return 1;
+                                            })
                             ).then(
                                     literal("materialBasedLimits").then(
                                             argument("valye", BoolArgumentType.bool()).executes((context) -> {
@@ -51,7 +60,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"material based limits\" set to " + (materialBasedLimits ? "true" : "false")));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context -> {
+                                        boolean materialBasedLimits = SimpleVeinminer.getConfig().limits.materialBasedLimits;
+                                        context.getSource().sendMessage(Text.of("Max vein size is " + (materialBasedLimits ? "" : "not ") + "material based"));
+                                        return 1;
+                                    })
                             )
                     ).then(
                             literal("restrictions").then(
@@ -62,7 +75,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"can veinmine hungry\" set to " + (canVeinmineHungry ? "true" : "false")));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context -> {
+                                        boolean canVeinmineHungry = SimpleVeinminer.getConfig().restrictions.canVeinmineHungry;
+                                        context.getSource().sendMessage(Text.of(canVeinmineHungry ? "Able to veinmine while hungry" : "Unable to veinmine while hungry"));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("emptyHand").then(
                                             argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -71,7 +88,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"can veinmine with empty hand\" set to " + (canVeinmineWithEmptyHand ? "true" : "false")));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context -> {
+                                        boolean canVeinmineWithEmptyHand = SimpleVeinminer.getConfig().restrictions.canVeinmineWithEmptyHand;
+                                        context.getSource().sendMessage(Text.of(canVeinmineWithEmptyHand ? "Able to veinmine with empty hand" : "Unable to veinmine with empty hand"));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("creativeBypass").then(
                                             argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -80,7 +101,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"creative bypass\" set to " + (creativeBypass ? "true" : "false")));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context->{
+                                        boolean creativeBypass = SimpleVeinminer.getConfig().restrictions.creativeBypass;
+                                        context.getSource().sendMessage(Text.of("Creative bypass " + (creativeBypass ? "enabled" : "disabled")));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("onlySuitableTools").then(
                                             argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -89,7 +114,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"only suitable tools\" set to " + (onlySuitableTools ? "true" : "false")));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context-> {
+                                        boolean onlySuitableTools = SimpleVeinminer.getConfig().restrictions.canOnlyUseSuitableTools;
+                                        context.getSource().sendMessage(Text.of(onlySuitableTools ? "Only suitable tools can be used" : "Any tool can be used"));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("list").then(
                                             literal("type").then(
@@ -110,7 +139,11 @@ public class CommandRegister {
                                                         context.getSource().sendMessage(Text.of("Veinmining \"list type\" set to \"none\""));
                                                         return 1;
                                                     })
-                                            )
+                                            ).executes(context -> {
+                                                SimpleConfig.Restrictions.RestrictionList.ListType listType = SimpleVeinminer.getConfig().restrictions.restrictionList.listType;
+                                                context.getSource().sendMessage(Text.of("Veinmining \"list type\" is set to \"" + listType.name().toUpperCase() + "\""));
+                                                return 1;
+                                            })
                                     ).then(
                                             literal("add").then(
                                                     argument("value", BlockIdOrTagArgumentType.blockIdOrTag(registryAccess))
@@ -146,8 +179,11 @@ public class CommandRegister {
                                             context.getSource().sendMessage(Text.of("To remove blocks, use \"/veinminer restrictions list remove <id/tag>\""));
                                             context.getSource().sendMessage(Text.of("To clear the list, use \"/veinminer restrictions list clear\""));
                                             return 1;
-                                        } else
+                                        } else {
+                                            context.getSource().sendMessage(Text.of("List type is set to " + SimpleVeinminer.getConfig().restrictions.restrictionList.listType.name().toUpperCase()));
+                                            context.getSource().sendMessage(Text.of("List:"));
                                             list.forEach(s -> context.getSource().sendMessage(Text.of(s)));
+                                        }
                                         return 1;
                                     })
                             )
@@ -160,7 +196,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"exhaust\" set to " + (exhaust ? "true" : "false")));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context -> {
+                                        boolean exhaust = SimpleVeinminer.getConfig().exhaustion.exhaust;
+                                        context.getSource().sendMessage(Text.of("Veinmining exhaustion is " + (exhaust ? "enabled" : "disabled")));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("baseValue").then(
                                             argument("value", DoubleArgumentType.doubleArg()).executes((context) -> {
@@ -169,7 +209,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"base value\" set to " + baseValue));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context -> {
+                                        double baseValue = SimpleVeinminer.getConfig().exhaustion.baseValue;
+                                        context.getSource().sendMessage(Text.of("Exhaustion \"base value\" is set to " + baseValue));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("multiplyByHardness").then(
                                             argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -178,7 +222,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"multiply by hardness\" set to " + (multiplyByHardness ? "true" : "false")));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context -> {
+                                        boolean multiplyByHardness = SimpleVeinminer.getConfig().exhaustion.exhaustionBasedOnHardness;
+                                        context.getSource().sendMessage(Text.of("Exhaustion is " + (multiplyByHardness ? "": "not ") + "hardness based"));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("hardnessWeight").then(
                                             argument("value", DoubleArgumentType.doubleArg()).executes((context) -> {
@@ -187,7 +235,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"hardness multiplier\" set to " + hardnessMultiplier));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context->{
+                                        double hardnessMultiplier = SimpleVeinminer.getConfig().exhaustion.hardnessWeight;
+                                        context.getSource().sendMessage(Text.of("The hardness weight on exhaustion is " + hardnessMultiplier));
+                                        return 1;
+                                    })
                             )
                     ).then(
                             literal("durability").then(
@@ -198,7 +250,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"durability multiplier\" set to " + multiplier));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context -> {
+                                        double multiplier = SimpleVeinminer.getConfig().durability.damageMultiplier;
+                                        context.getSource().sendMessage(Text.of("Veinmining \"durability multiplier\" is set to " + multiplier));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("swordMultiplier").then(
                                             argument("value", DoubleArgumentType.doubleArg()).executes((context) -> {
@@ -207,7 +263,11 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"sword multiplier\" set to " + multiplier));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context -> {
+                                        double multiplier = SimpleVeinminer.getConfig().durability.swordMultiplier;
+                                        context.getSource().sendMessage(Text.of("Veinmining \"sword multiplier\" is set to " + multiplier));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("consumeOnInstantBreak").then(
                                             argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -216,8 +276,18 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"consume on instant break\" set to " + (consumeOnInstantBreak ? "true" : "false")));
                                                 return 1;
                                             })
-                                    )
+                                    ).executes(context -> {
+                                        boolean consumeOnInstantBreak = SimpleVeinminer.getConfig().durability.consumeOnInstantBreak;
+                                        context.getSource().sendMessage(Text.of("Veinmining \"consume on instant break\" is " + (consumeOnInstantBreak ? "enabled" : "disabled")));
+                                        return 1;
+                                    })
                             )
+                    ).then(
+                            literal("reset").executes(context-> {
+                                SimpleVeinminer.getConfig().reset();
+                                context.getSource().sendMessage(Text.of("Resetting config to default values"));
+                                return 1;
+                            })
                     )
             );
         });

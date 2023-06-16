@@ -25,6 +25,8 @@ repositories {
     maven {
         url "https://maven.isxander.dev/releases"
     }
+
+    
 }
 
 dependencies {
@@ -41,12 +43,15 @@ dependencies {
 
     // CompleteConfig
     modImplementation("com.github.Lortseam.completeconfig:base:${project.completeconfig_version}")
-    modImplementation("com.github.Lortseam.completeconfig:gui-cloth:${project.completeconfig_version}")
+    //modImplementation("com.github.Lortseam.completeconfig:gui-yacl:${project.completeconfig_version}")
+    //modImplementation("com.github.Lortseam.completeconfig:gui-cloth:${project.completeconfig_version}")
+
 
     // modImplementation("com.gitlab.Lortseam.completeconfig:gui-coat:${project.completeconfig_version}")
 
     include("com.github.Lortseam.completeconfig:base:${project.completeconfig_version}")
-    include("com.github.Lortseam.completeconfig:gui-cloth:${project.completeconfig_version}")
+    //include("com.github.Lortseam.completeconfig:gui-yacl:${project.completeconfig_version}")
+    //include("com.github.Lortseam.completeconfig:gui-cloth:${project.completeconfig_version}")
     // include("com.gitlab.Lortseam.completeconfig:gui-coat:${project.completeconfig_version}")
 
     // Cloth basic math
@@ -60,9 +65,11 @@ dependencies {
     // include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components_version}"
 
     // Cloth config
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+    /*modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
-    }
+    }*/
+
+    //modImplementation "dev.isxander.yacl:yet-another-config-lib-fabric:${project.yacl_version}"
 }
 
 processResources {

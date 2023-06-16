@@ -4,8 +4,6 @@ import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.cyanmarine.simpleveinminer.config.SimpleConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,12 +69,14 @@ public abstract class BlockMixin {
             BlockEntity currentBlockEntity = world.getBlockEntity(currentPos);
             //world.breakBlock(currentPos, false);
 
-            if (shouldDrop(player, hand, state))
+            boolean willDrop = shouldDrop(player, hand, state);
+
+            if (willDrop)
                 getDroppedStacks(state, (ServerWorld) world, pos, currentBlockEntity, player, hand).forEach((stack) -> {
                     if (SimpleVeinminer.getConfig().placeInInventory) player.getInventory().offerOrDrop(stack);
                     else dropStack(world, pos, stack);
                 });
-            state.onStacksDropped((ServerWorld) world, pos, hand, true);
+            state.onStacksDropped((ServerWorld) world, pos, hand, willDrop);
             // currentBlock.dropStacks(currentState, world, pos, currentBlockEntity, player, hand);
             player.incrementStat(Stats.MINED.getOrCreateStat(currentBlock));
             world.removeBlock(currentPos, false);
@@ -91,8 +91,7 @@ public abstract class BlockMixin {
     }
 
     public boolean shouldDrop(PlayerEntity player, ItemStack hand, BlockState state) {
-        Material material = state.getMaterial();
-        return !player.isCreative() && (!(material == Material.METAL || material == Material.STONE || state.isOf(Blocks.SNOW)) || hand.isSuitableFor(state));
+        return !player.isCreative() && (!state.isToolRequired() || hand.isSuitableFor(state));
     }
 
     public boolean shouldDamage(PlayerEntity player, ItemStack hand, Block block, SimpleConfig.Durability durability) {
