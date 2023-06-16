@@ -25,7 +25,6 @@ Available on [curseforge](curseforge.com/minecraft/mc-mods/simple-veinminer) and
 
 ##### As this is my first mod, I'm not 100% sure if I've done everything the most efficient way possible, but I did my best
 
-
 # Enchantments and multiplayer
 
 I haven't tested any modded enchantments (yet), but the vanilla ones work correctly
@@ -78,6 +77,7 @@ If you are having trouble with "restrictions" configs. Make sure "Ignore restric
 ### Added
 - More commands
 ### Changed
+
 - Updated for minecraft 1.20+
 - Won't drop xp when mining with an inadequate tool (e.g. using a wooden pickaxe to mine diamond ore)
 ### Removed
