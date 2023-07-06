@@ -1,8 +1,8 @@
 package net.cyanmarine.simpleveinminer.gui;
 
 import me.lortseam.completeconfig.gui.ConfigScreenBuilder;
-//import me.lortseam.completeconfig.gui.cloth.ClothConfigScreenBuilder;
 //import me.lortseam.completeconfig.gui.yacl.YaclScreenBuilder;
+import me.lortseam.completeconfig.gui.cloth.ClothConfigScreenBuilder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 
 public enum ScreenBuilderType {
@@ -20,9 +20,16 @@ public enum ScreenBuilderType {
         }
     };
 
+    /*YACL() {
+        @Override
+        public ConfigScreenBuilder<?> create() {
+            return new YaclScreenBuilder();
+        }
+    };*/
 
 
-    public abstract ConfigScreenBuilder<?> create();*/
+
+    public abstract ConfigScreenBuilder<?> create();
 
 }
 

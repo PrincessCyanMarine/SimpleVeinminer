@@ -7,9 +7,6 @@
 
 ---
 
-
-Cloth config integration was disabled for version 1.4.1 (because complete config hasn't updated yet), use commands to change configurations
-
 Available on [curseforge](curseforge.com/minecraft/mc-mods/simple-veinminer) and [modrinth](https://modrinth.com/mod/simple-veinminer)
 
 ---
@@ -75,14 +72,8 @@ If you are having trouble with "restrictions" configs. Make sure "Ignore restric
 
 # Changelog
 
-## [v1.4.1]
+## [v1.4.2]
 ### Added
-- More commands
-### Changed
-
-- Updated for minecraft 1.20+
-- Won't drop xp when mining with an inadequate tool (e.g. using a wooden pickaxe to mine diamond ore)
-### Removed
-- Cloth config integration (for now)
+- Re-added cloth config integration
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)
