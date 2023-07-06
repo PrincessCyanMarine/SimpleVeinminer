@@ -6,11 +6,27 @@
 ### Please read this page before asking questions
 
 ---
-#### _The config file for v1.1.1+ is now simple_veinminer.conf_
+
+Available on [curseforge](curseforge.com/minecraft/mc-mods/simple-veinminer) and [modrinth](https://modrinth.com/mod/simple-veinminer)
+
+---
+
+
+![Requires Fabric Loader](https://img.shields.io/badge/modloader-Fabric-1976d2?style=for-the-badge) (and requires fabric API)
+
+![Required on server](https://img.shields.io/badge/Server-required-orangered?style=for-the-badge)
+![Heavily recommended on client](https://img.shields.io/badge/client-heavily_recommended-16b51a?style=for-the-badge)
+
 
 ### This Is my first actual mod, so some feedback would be appreciated
 
 ##### As this is my first mod, I'm not 100% sure if I've done everything the most efficient way possible, but I did my best
+
+
+# Found a bug? Has a suggestion? Any complaints?
+
+Please leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [modrinth](https://modrinth.com/mod/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues) on Github
+
 
 # Enchantments and multiplayer
 
@@ -46,10 +62,6 @@ If you are confused about the difference between highlighting modes, I recommend
 
 # ~~Shapes (BETA)~~ Removed
 
-
-# Found a bug? Has a suggestion? Any complaints?
-
-Please leave a comment on [curseforge](https://www.curseforge.com/minecraft/mc-mods/simple-veinminer) or [modrinth](https://modrinth.com/mod/simple-veinminer) or [create an issue](https://github.com/PrincessCyanMarine/Simple-Veinminer/issues) on Github
 
 # Modpacks
 
