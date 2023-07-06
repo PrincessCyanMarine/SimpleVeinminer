@@ -6,20 +6,7 @@
 ### Please read this page before asking questions
 
 ---
-
-
-Cloth config integration was disabled for version 1.4.1 (because complete config hasn't updated yet), use commands to change configurations
-
-Available on [curseforge](curseforge.com/minecraft/mc-mods/simple-veinminer) and [modrinth](https://modrinth.com/mod/simple-veinminer)
-
----
-
-
-![Requires Fabric Loader](https://img.shields.io/badge/modloader-Fabric-1976d2?style=for-the-badge) (and requires fabric API)
-
-![Required on server](https://img.shields.io/badge/Server-required-orangered?style=for-the-badge)
-![Heavily recommended on client](https://img.shields.io/badge/client-heavily_recommended-16b51a?style=for-the-badge)
-
+#### _The config file for v1.1.1+ is now simple_veinminer.conf_
 
 ### This Is my first actual mod, so some feedback would be appreciated
 
@@ -73,14 +60,8 @@ If you are having trouble with "restrictions" configs. Make sure "Ignore restric
 
 # Changelog
 
-## [v1.4.1]
+## [v1.4.2]
 ### Added
-- More commands
-### Changed
-
-- Updated for minecraft 1.20+
-- Won't drop xp when mining with an inadequate tool (e.g. using a wooden pickaxe to mine diamond ore)
-### Removed
-- Cloth config integration (for now)
+- Re-added cloth config integration
 
 [Full changelog](https://github.com/PrincessCyanMarine/Simple-Veinminer/blob/main/CHANGELOG.md)
