@@ -21,7 +21,7 @@ public class RestrictionListArgumentType implements ArgumentType<String> {
     public RestrictionListArgumentType() {
     }
 
-    public static java.lang.String getListMember(CommandContext<ServerCommandSource> context, java.lang.String name) throws CommandSyntaxException {
+    public static java.lang.String getListMember(CommandContext<ServerCommandSource> context, java.lang.String name) {
         return context.getArgument(name, java.lang.String.class);
     }
 

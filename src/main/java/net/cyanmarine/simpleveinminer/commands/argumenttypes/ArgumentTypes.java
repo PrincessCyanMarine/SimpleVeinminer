@@ -6,7 +6,7 @@ import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 
 public class ArgumentTypes {
     public ArgumentTypes() {
-        ArgumentTypeRegistry.registerArgumentType(SimpleVeinminer.getId("list_item"), RestrictionListArgumentType.class, ConstantArgumentSerializer.of(() -> RestrictionListArgumentType.listItem()));
+        ArgumentTypeRegistry.registerArgumentType(SimpleVeinminer.getId("list_item"), RestrictionListArgumentType.class, ConstantArgumentSerializer.of(RestrictionListArgumentType::listItem));
         ArgumentTypeRegistry.registerArgumentType(SimpleVeinminer.getId("block_id_or_tag"), BlockIdOrTagArgumentType.class, ConstantArgumentSerializer.of(BlockIdOrTagArgumentType::blockIdOrTag));
         ArgumentTypeRegistry.registerArgumentType(SimpleVeinminer.getId("highlight_modes"), HighlightModesArgumentType.class, ConstantArgumentSerializer.of(HighlightModesArgumentType::highlightModes));
     }

@@ -30,6 +30,7 @@ import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -62,7 +63,7 @@ public abstract class WorldRendererMixin {
     private MinecraftClient client;
 
     @Shadow
-    protected static void drawCuboidShapeOutline(MatrixStack matrices, VertexConsumer vertexConsumer, VoxelShape shape, double offsetX, double offsetY, double offsetZ, float red, float green, float blue, float alpha) {
+    private static void drawCuboidShapeOutline(MatrixStack matrices, VertexConsumer vertexConsumer, VoxelShape shape, double offsetX, double offsetY, double offsetZ, float red, float green, float blue, float alpha) {
     }
 
     @Shadow
@@ -75,7 +76,7 @@ public abstract class WorldRendererMixin {
             PlayerEntity player = (PlayerEntity) entity;
             SimpleConfigClient.Highlight outline = SimpleVeinminerClient.getConfig().highlight;
             SimpleConfig.SimpleConfigCopy worldConfig = SimpleVeinminerClient.getWorldConfig();
-            if ((SimpleVeinminerClient.veinMineKeybind.isPressed() || (SimpleVeinminerClient.isVeinMiningServerSide && player.isSneaking())) && SimpleVeinminer.canVeinmine(player, world, pos, state, worldConfig.restrictions) && outline.doHighlight) {
+            if ((SimpleVeinminerClient.veinMineKeybind.isPressed() || (SimpleVeinminerClient.isVeinMiningServerSide && player.isSneaking())) && SimpleVeinminer.canVeinmine(player, state, worldConfig.restrictions) && outline.doHighlight) {
                 ci.cancel();
 
                 assert client.player != null;
@@ -162,6 +163,7 @@ public abstract class WorldRendererMixin {
         }
     }
 
+    @Unique
     private void reset() {
         clearBlockBreakingProgressions();
         currentlyOutliningPos = null;
@@ -173,7 +175,7 @@ public abstract class WorldRendererMixin {
         resetCountdown = false;
     }
 
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/render/WorldRenderer;render(Lnet/minecraft/client/util/math/MatrixStack;FJZLnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/GameRenderer;Lnet/minecraft/client/render/LightmapTextureManager;Lorg/joml/Matrix4f;)V")
+    @Inject(at = @At("HEAD"), method = "render(Lnet/minecraft/client/util/math/MatrixStack;FJZLnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/GameRenderer;Lnet/minecraft/client/render/LightmapTextureManager;Lorg/joml/Matrix4f;)V")
     public void renderInject(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f positionMatrix, CallbackInfo ci) {
         ClientPlayerEntity player = client.player;
         if (player == null || world == null) return;
@@ -195,8 +197,7 @@ public abstract class WorldRendererMixin {
                 if (beingBroken == null)
                     beingBroken = (ArrayList<BlockPos>) blocksToHighlight.clone();
 
-                for (int i = 0; i < blocksToHighlight.size(); i++) {
-                    BlockPos currentPos = blocksToHighlight.get(i);
+                for (BlockPos currentPos : blocksToHighlight) {
                     if (currentPos.equals(currentlyOutliningPos)) continue;
                     BlockBreakingInfo newBlockBreakingProgress = new BlockBreakingInfo(blockBreakingProgress.hashCode(), currentPos);
                     newBlockBreakingProgress.setStage(stage);
@@ -207,7 +208,7 @@ public abstract class WorldRendererMixin {
     }
 
 
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/render/WorldRenderer;removeBlockBreakingInfo(Lnet/minecraft/client/render/BlockBreakingInfo;)V", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "removeBlockBreakingInfo(Lnet/minecraft/client/render/BlockBreakingInfo;)V", cancellable = true)
     public void removeBlockBreakingInfoReplace(BlockBreakingInfo info, CallbackInfo ci) {
         ci.cancel();
         long l = info.getPos().asLong();
@@ -220,10 +221,10 @@ public abstract class WorldRendererMixin {
         }
     }
 
+    @Unique
     private void clearBlockBreakingProgressions() {
         if (beingBroken != null && blockBreakingProgressions != null)
-            for (int i = 0; i < beingBroken.size(); i++) {
-                BlockPos pos = beingBroken.get(i);
+            for (BlockPos pos : beingBroken) {
                 if (pos.equals(currentlyOutliningPos)) continue;
                 long l = pos.asLong();
                 SortedSet<BlockBreakingInfo> set = this.blockBreakingProgressions.get(l);
@@ -235,19 +236,20 @@ public abstract class WorldRendererMixin {
         beingBroken = null;
     }
 
+    @Unique
     private ArrayList<BlockPos> getBlocksToOutline(BlockPos pos, BlockState state, PlayerEntity player, boolean onlyExposed) {
         ArrayList<BlockPos> willVeinmine = SimpleVeinminer.getBlocksToVeinmine(pos, state, SimpleVeinminer.getMaxBlocks(holding), player);
         if (!onlyExposed) return willVeinmine;
         ArrayList<BlockPos> willOutline = new ArrayList<>();
 
-        for (int i = 0; i < willVeinmine.size(); i++) {
-            BlockPos currentPos = willVeinmine.get(i);
+        for (BlockPos currentPos : willVeinmine) {
             if (hasFaceVisible(currentPos)) willOutline.add(currentPos);
         }
 
         return willOutline;
     }
 
+    @Unique
     private boolean hasFaceVisible(BlockPos pos) {
         if (world == null) return false;
         BlockPos[] neighbors = SimpleVeinminer.getNeighbors(pos);
@@ -256,6 +258,7 @@ public abstract class WorldRendererMixin {
         return false;
     }
 
+    @Unique
     private void outline(MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos pos, BlockState state, float r, float g, float b, float a) {
         drawCuboidShapeOutline(matrices, vertexConsumer, state.getOutlineShape(world, pos, ShapeContext.of(entity)), (double) pos.getX() - d, (double) pos.getY() - e, (double) pos.getZ() - f, r, g, b, a);
     }

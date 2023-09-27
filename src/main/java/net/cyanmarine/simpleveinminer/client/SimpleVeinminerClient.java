@@ -1,19 +1,16 @@
 package net.cyanmarine.simpleveinminer.client;
 
-import me.lortseam.completeconfig.gui.ConfigScreenBuilder;
 import net.cyanmarine.simpleveinminer.Constants;
 import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.cyanmarine.simpleveinminer.commands.CommandRegisterClient;
 import net.cyanmarine.simpleveinminer.config.SimpleConfig;
 import net.cyanmarine.simpleveinminer.config.SimpleConfigClient;
-import net.cyanmarine.simpleveinminer.gui.ScreenBuilderType;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.render.BufferBuilder;
@@ -115,7 +112,7 @@ public class SimpleVeinminerClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (veinMining != veinMineKeybind.isPressed()) {
                 veinMining = !veinMining;
-                if (config.keybindToggles)
+                if (config.keybindToggles && client.player != null)
                     client.player.sendMessage(veinMining ? Text.translatable("messages.simpleveinminer.veinminingToggled.on") : Text.translatable("messages.simpleveinminer.veinminingToggled.off"), true);
 
                 PacketByteBuf buf = PacketByteBufs.create();
@@ -147,9 +144,7 @@ public class SimpleVeinminerClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(Constants.SERVERSIDE_UPDATE, (client, handler, buf, responseSender) -> {
             boolean newValue = buf.readBoolean();
 
-            client.execute(() -> {
-                isVeinMiningServerSide = newValue;
-            });
+            client.execute(() -> isVeinMiningServerSide = newValue);
         });
 
         LOGGER.info("Simple VeinMiner initialized");
