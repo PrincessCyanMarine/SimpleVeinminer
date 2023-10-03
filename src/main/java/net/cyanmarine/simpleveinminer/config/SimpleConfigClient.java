@@ -14,6 +14,10 @@ public class SimpleConfigClient extends SimpleConfig {
     @ConfigEntry.Boolean(falseKey = "keybindToggles.value.false", trueKey = "keybindToggles.value.true")
     public boolean keybindToggles = false;
 
+    @ConfigEntry(comment = "This has no effect if keybindToggles is false", descriptionKey = "toggleState.description")
+    @ConfigEntry.Boolean(falseKey = "toggleState.value.false", trueKey = "toggleState.value.true")
+    public boolean toggleState = false;
+
     @Transitive
     public Highlight highlight = new Highlight();
 
@@ -21,6 +25,7 @@ public class SimpleConfigClient extends SimpleConfig {
         this.showMiningProgress = true;
         this.showRestrictionMessages = true;
         this.keybindToggles = false;
+        this.toggleState = false;
         this.highlight = new Highlight();
         this.save();
     }
@@ -37,6 +42,11 @@ public class SimpleConfigClient extends SimpleConfig {
 
     public void setKeybindToggles(boolean keybindToggles) {
         this.keybindToggles = keybindToggles;
+        this.save();
+    }
+
+    public void setToggleState(boolean toggleState) {
+        this.toggleState = toggleState;
         this.save();
     }
 

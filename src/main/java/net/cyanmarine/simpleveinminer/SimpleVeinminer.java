@@ -216,6 +216,7 @@ public class SimpleVeinminer implements ModInitializer {
         playersVeinMining = new ArrayList<>();
         ServerPlayNetworking.registerGlobalReceiver(Constants.NETWORKING_VEINMINE, (server, player, handler, buf, sender) -> {
             boolean isVeinMining = buf.readBoolean();
+            LOGGER.error("update: {}", isVeinMining);
             server.execute(() -> setVeinmining(player, isVeinMining));
         });
 

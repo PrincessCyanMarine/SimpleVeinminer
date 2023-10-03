@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.render.BufferBuilder;
@@ -36,6 +37,7 @@ public class SimpleVeinminerClient implements ClientModInitializer {
     private static SimpleConfigClient config;
     public static KeyBinding veinMineKeybind = KeyBindingHelper.registerKeyBinding(new StickyKeyBinding("key.simpleveinminer.veinminingKey", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.simpleveinminer.veinminerCategory", () -> config.keybindToggles));
     public static boolean veinMining;
+    private static boolean connected = false;
 
     public static SimpleConfig.SimpleConfigCopy getWorldConfig() {
         if (worldConfig == null) return SimpleConfig.SimpleConfigCopy.from(config);
@@ -108,10 +110,12 @@ public class SimpleVeinminerClient implements ClientModInitializer {
 
         new CommandRegisterClient();
 
-
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (veinMining != veinMineKeybind.isPressed()) {
+            if (connected && veinMining != veinMineKeybind.isPressed()) {
                 veinMining = !veinMining;
+                if (config.keybindToggles) {
+                    config.setToggleState(veinMining);
+                }
                 if (config.keybindToggles && client.player != null)
                     client.player.sendMessage(veinMining ? Text.translatable("messages.simpleveinminer.veinminingToggled.on") : Text.translatable("messages.simpleveinminer.veinminingToggled.off"), true);
 
@@ -121,8 +125,21 @@ public class SimpleVeinminerClient implements ClientModInitializer {
             }
         });
 
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            connected = true;
+            if (config.keybindToggles && veinMining != config.toggleState) {
+                veinMining = config.toggleState;
+                veinMineKeybind.setPressed(veinMining);
+                PacketByteBuf buf = PacketByteBufs.create();
+                buf.writeBoolean(veinMining);
+                ClientPlayNetworking.send(Constants.NETWORKING_VEINMINE, buf);
+            }
+        });
+
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             worldConfig = null;
+            connected = false;
+            veinMining = false;
             SimpleVeinminerClient.isInstalledOnServerSide.set(false);
         });
 
