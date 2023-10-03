@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -39,11 +40,12 @@ public abstract class BlockMixin {
     @Inject(at = @At("HEAD"), method = "onBreak(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/entity/player/PlayerEntity;)V")
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfo ci) {
         if (!world.isClient() && SimpleVeinminer.isVeinmining(player)) {
-            if (SimpleVeinminer.canVeinmine(player, world, pos, state, SimpleVeinminer.getConfig().restrictions))
+            if (SimpleVeinminer.canVeinmine(player, state, SimpleVeinminer.getConfig().restrictions))
                 veinMine(world, pos, state, player);
         }
     }
 
+    @Unique
     private void veinMine(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         ItemStack hand = player.getMainHandStack();
         Item handItem = player.getMainHandStack().getItem();
@@ -61,39 +63,44 @@ public abstract class BlockMixin {
         Block block = state.getBlock();
         double totalExhausted = (exhaustion.baseValue + (exhaustion.exhaustionBasedOnHardness ? (block.getHardness() * exhaustion.hardnessWeight) : 0));
 
-        for (int i = 0; i < blocksToBreak.size(); i++) {
-            BlockPos currentPos = blocksToBreak.get(i);
+        for (BlockPos currentPos : blocksToBreak) {
             BlockState currentState = world.getBlockState(currentPos);
-            if (currentState.isAir()) continue;
+            if(currentState.isAir()) continue;
             Block currentBlock = currentState.getBlock();
             BlockEntity currentBlockEntity = world.getBlockEntity(currentPos);
             //world.breakBlock(currentPos, false);
 
             boolean willDrop = shouldDrop(player, hand, state);
 
-            if (willDrop)
-                getDroppedStacks(state, (ServerWorld) world, pos, currentBlockEntity, player, hand).forEach((stack) -> {
-                    if (SimpleVeinminer.getConfig().placeInInventory) player.getInventory().offerOrDrop(stack);
+            if(willDrop) {
+                List<ItemStack> droppedStacks = getDroppedStacks(state, (ServerWorld) world, pos, currentBlockEntity, player, hand);
+                if (droppedStacks != null)
+                    droppedStacks.forEach((stack) -> {
+                    if(SimpleVeinminer.getConfig().placeInInventory)
+                        player.getInventory().offerOrDrop(stack);
                     else dropStack(world, pos, stack);
                 });
+            }
             state.onStacksDropped((ServerWorld) world, pos, hand, willDrop);
             // currentBlock.dropStacks(currentState, world, pos, currentBlockEntity, player, hand);
             player.incrementStat(Stats.MINED.getOrCreateStat(currentBlock));
             world.removeBlock(currentPos, false);
 
-            if (shouldDamage(player, hand, currentBlock, durability))
-                hand.damage((int) (damageMultiplier), player.getRandom(), (ServerPlayerEntity) player);
-            if (exhaustion.exhaust)
-                player.addExhaustion((float) totalExhausted);
+            if(shouldDamage(player, hand, currentBlock, durability))
+                hand.damage((int) (damageMultiplier), player.getRandom(),
+                        (ServerPlayerEntity) player);
+            if(exhaustion.exhaust) player.addExhaustion((float) totalExhausted);
 
-            if (hand.isDamageable() && hand.getDamage() >= hand.getMaxDamage()) break;
+            if(hand.isDamageable() && hand.getDamage() >= hand.getMaxDamage()) break;
         }
     }
 
+    @Unique
     public boolean shouldDrop(PlayerEntity player, ItemStack hand, BlockState state) {
         return !player.isCreative() && (!state.isToolRequired() || hand.isSuitableFor(state));
     }
 
+    @Unique
     public boolean shouldDamage(PlayerEntity player, ItemStack hand, Block block, SimpleConfig.Durability durability) {
         return !player.isCreative() && hand.isDamageable() && (durability.consumeOnInstantBreak || block.getHardness() > 0);
     }

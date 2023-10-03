@@ -6,17 +6,10 @@ import me.lortseam.completeconfig.gui.cloth.ClothConfigScreenBuilder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 
 public enum ScreenBuilderType {
-    /*CLOTH_CONFIG() {
+    CLOTH_CONFIG() {
         @Override
         public ConfigScreenBuilder<?> create() {
             return new ClothConfigScreenBuilder(() -> ConfigBuilder.create().setTransparentBackground(true).setShouldListSmoothScroll(true).setShouldTabsSmoothScroll(true));
-        }
-    },
-
-    YACL() {
-        @Override
-        public ConfigScreenBuilder<?> create() {
-            return new YaclScreenBuilder();
         }
     };
 
@@ -26,8 +19,6 @@ public enum ScreenBuilderType {
             return new YaclScreenBuilder();
         }
     };*/
-
-
 
     public abstract ConfigScreenBuilder<?> create();
 

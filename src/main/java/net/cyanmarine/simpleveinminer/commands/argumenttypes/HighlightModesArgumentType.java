@@ -20,7 +20,7 @@ public class HighlightModesArgumentType implements ArgumentType<SimpleConfigClie
         return new HighlightModesArgumentType();
     }
 
-    public static <T extends CommandSource> SimpleConfigClient.Highlight.MODES getHighlightMode(CommandContext<T> context, java.lang.String name) throws CommandSyntaxException {
+    public static <T extends CommandSource> SimpleConfigClient.Highlight.MODES getHighlightMode(CommandContext<T> context, java.lang.String name) {
         return context.getArgument(name, SimpleConfigClient.Highlight.MODES.class);
     }
 

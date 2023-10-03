@@ -38,7 +38,7 @@ public class BlockIdOrTagArgumentType implements ArgumentType<String> {
         return res;
     }
 
-    public static String getBlockIdOrTag(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+    public static String getBlockIdOrTag(CommandContext<ServerCommandSource> context, String name) {
         return context.getArgument(name, String.class);
     }
 

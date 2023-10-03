@@ -133,7 +133,7 @@ public class SimpleVeinminer implements ModInitializer {
         return false;
     }
 
-    public static boolean canVeinmine(PlayerEntity player, World world, BlockPos pos, BlockState state, SimpleConfig.Restrictions restrictions) {
+    public static boolean canVeinmine(PlayerEntity player, BlockState state, SimpleConfig.Restrictions restrictions) {
         if (restrictions.creativeBypass && player.isCreative()) return true;
 
         Item hand = player.getMainHandStack().getItem();
@@ -216,6 +216,7 @@ public class SimpleVeinminer implements ModInitializer {
         playersVeinMining = new ArrayList<>();
         ServerPlayNetworking.registerGlobalReceiver(Constants.NETWORKING_VEINMINE, (server, player, handler, buf, sender) -> {
             boolean isVeinMining = buf.readBoolean();
+            LOGGER.error("update: {}", isVeinMining);
             server.execute(() -> setVeinmining(player, isVeinMining));
         });
 
