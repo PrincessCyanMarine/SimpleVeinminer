@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
  -->
 
+## [v1.4.2]
+### Added
+- Re-added cloth config integration
+- 
 ## [v1.4.1]
 ### Added
 - More commands
