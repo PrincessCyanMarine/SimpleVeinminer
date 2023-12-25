@@ -1,12 +1,11 @@
+
+
 ## This is a ***veinmining*** mod
 ### Veinmining mines veins of a same block. For mining 3x3s, look for a hammer/excavator mod
 ### To activate veinmining, use the keybinding. Keybindings can be changed in the controls menu
 ### Please read this page before asking questions
 
 ---
-
-
-Cloth config integration was disabled for version 1.4.1 (because complete config hasn't updated yet), use commands to change configurations
 
 Available on [curseforge](curseforge.com/minecraft/mc-mods/simple-veinminer) and [modrinth](https://modrinth.com/mod/simple-veinminer)
 
