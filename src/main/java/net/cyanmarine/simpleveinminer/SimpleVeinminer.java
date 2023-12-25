@@ -233,7 +233,7 @@ public class SimpleVeinminer implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server1) -> setVeinmining(handler.getPlayer(), false));
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             SimpleVeinminer.server = server;
-            LOGGER.info("New server");
+            // LOGGER.info("New server");
         });
 
         new ArgumentTypes();
