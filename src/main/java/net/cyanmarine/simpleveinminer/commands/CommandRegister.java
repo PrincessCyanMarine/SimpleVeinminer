@@ -54,7 +54,7 @@ public class CommandRegister {
                                             })
                             ).then(
                                     literal("materialBasedLimits").then(
-                                            argument("valye", BoolArgumentType.bool()).executes((context) -> {
+                                            argument("value", BoolArgumentType.bool()).executes((context) -> {
                                                 boolean materialBasedLimits = BoolArgumentType.getBool(context, "value");
                                                 SimpleVeinminer.getConfig().limits.setMaterialBasedLimits(materialBasedLimits);
                                                 context.getSource().sendMessage(Text.of("Veinmining \"material based limits\" set to " + (materialBasedLimits ? "true" : "false")));
