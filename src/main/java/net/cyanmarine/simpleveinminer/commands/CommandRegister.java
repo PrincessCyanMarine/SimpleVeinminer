@@ -32,8 +32,8 @@ public class CommandRegister {
                                         return 1;
                                     })
                             ).executes(context -> {
-                                boolean placeInInventory = !SimpleVeinminer.getConfig().placeInInventory;
-                                context.getSource().sendMessage(Text.of(placeInInventory ? "Dropping blocks on the ground" : "Placing blocks in inventory"));
+                                boolean placeInInventory = SimpleVeinminer.getConfig().placeInInventory;
+                                context.getSource().sendMessage(Text.of(placeInInventory ? "Placing blocks in inventory" : "Dropping blocks on the ground"));
                                 return 1;
                             })
                     ).then(
