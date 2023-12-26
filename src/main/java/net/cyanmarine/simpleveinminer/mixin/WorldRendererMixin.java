@@ -16,16 +16,17 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.data.client.VariantSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -39,6 +40,8 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import static net.cyanmarine.simpleveinminer.client.SimpleVeinminerClient.drawBox;
+import static net.minecraft.util.math.Vec3f.POSITIVE_X;
+import static net.minecraft.util.math.Vec3f.POSITIVE_Y;
 
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererMixin {
@@ -108,7 +111,7 @@ public abstract class WorldRendererMixin {
                     Tessellator tessellator = Tessellator.getInstance();
                     BufferBuilder buffer = tessellator.getBuffer();
 
-                    RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
+                    RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
                     RenderSystem.setShaderTexture(0, SimpleVeinminer.getId("highlight.png"));
                     RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
                     RenderSystem.depthFunc(GL11.GL_ALWAYS);
@@ -128,8 +131,8 @@ public abstract class WorldRendererMixin {
                         Vec3d transformedPosition = targetPosition.subtract(camera.getPos());
 
                         MatrixStack matrixStack = new MatrixStack();
-                        matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
-                        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
+                        matrixStack.multiply(POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
+                        matrixStack.multiply(POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
                         matrixStack.translate(transformedPosition.x, transformedPosition.y, transformedPosition.z);
                         Matrix4f positionMatrix = matrixStack.peek().getPositionMatrix();
 

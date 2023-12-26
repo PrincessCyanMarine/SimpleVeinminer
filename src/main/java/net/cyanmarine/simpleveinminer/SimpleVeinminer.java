@@ -23,15 +23,15 @@ import net.minecraft.item.ShearsItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.item.ToolMaterials;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -124,9 +124,9 @@ public class SimpleVeinminer implements ModInitializer {
             String name = restrictions.restrictionList.list.get(i);
             Identifier identifier = new Identifier(name.replaceAll("[^a-z0-9-_:]", ""));
             if (name.startsWith("#")) {
-                if (block.getDefaultState().isIn(TagKey.of(Registries.BLOCK.getKey(), identifier))) return true;
+                if (block.getDefaultState().isIn(TagKey.of(Registry.BLOCK.getKey(), identifier))) return true;
             } else {
-                Block compareTo = Registries.BLOCK.get(identifier);
+                Block compareTo = Registry.BLOCK.get(identifier);
                 if (compareTo.equals(block)) return true;
             }
         }

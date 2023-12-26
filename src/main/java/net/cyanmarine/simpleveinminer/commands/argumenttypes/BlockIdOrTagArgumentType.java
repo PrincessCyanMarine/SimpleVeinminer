@@ -9,12 +9,12 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.BlockArgumentParser;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,17 +22,17 @@ import java.util.concurrent.CompletableFuture;
 
 public class BlockIdOrTagArgumentType implements ArgumentType<String> {
     private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "#stone", "#minecraft:stone");
-    private final RegistryWrapper<Block> registryWrapper;
+    private final CommandRegistryWrapper<Block> registryWrapper;
 
     public BlockIdOrTagArgumentType(CommandRegistryAccess commandRegistryAccess) {
-        this.registryWrapper = commandRegistryAccess.createWrapper(RegistryKeys.BLOCK);
+        this.registryWrapper = commandRegistryAccess.createWrapper(Registry.BLOCK.getKey());
     }
 
-    public static String parse(RegistryWrapper<Block> registryWrapper, StringReader reader) throws CommandSyntaxException {
+    public static String parse(CommandRegistryWrapper<Block> registryWrapper, StringReader reader) throws CommandSyntaxException {
         String res = BlockArgumentParser.blockOrTag(registryWrapper, reader, false).map((result) ->
-                        Registries.BLOCK.getKey(result.blockState().getBlock()).map(blockRegistryKey -> blockRegistryKey.getValue().toString()).orElse(null),
+                        Registry.BLOCK.getKey(result.blockState().getBlock()).map(blockRegistryKey -> blockRegistryKey.getValue().toString()).orElse(null),
                 (result) ->
-                        result.tag().getTagKey().map(blockTagKey -> "#" + blockTagKey.id().toString()).orElse(null)
+                        result.tag().getStorage().map(blockTagKey -> "#" + blockTagKey.id().toString(), (b) -> null)
         );
         if (res == null) throw new SimpleCommandExceptionType(Text.of("Invalid block")).createWithContext(reader);
         return res;
