@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "simpleveinminer",
-  "version": "1.4.4",
-  "name": "Cyan's Simple Veinminer",
+  "id": "${id}",
+  "version": "${version}",
+  "name": "${name}",
   "description": "A simple veinminer mod\nCheck the homepage for more info",
   "authors": [
     "CyanMarine"
@@ -38,13 +38,13 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.14.7",
+    "fabricloader": "*",
     "fabric": "*",
-    "minecraft": ">=1.19"
+    "minecraft": "${minecraft_version}"
   },
   "suggests": {},
   "includes": {
-    "completeconfig-base": "2.4.0",
-    "completeconfig-gui-cloth": "2.4.0"
+    "completeconfig-base": "${completeconfig}",
+    "completeconfig-gui-cloth": "${completeconfig}"
   }
 }
