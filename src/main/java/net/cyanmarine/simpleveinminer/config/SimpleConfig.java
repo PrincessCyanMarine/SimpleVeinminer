@@ -5,7 +5,6 @@ import me.lortseam.completeconfig.api.ConfigEntries;
 import me.lortseam.completeconfig.api.ConfigEntry;
 import me.lortseam.completeconfig.api.ConfigGroup;
 import me.lortseam.completeconfig.data.Config;
-import me.lortseam.completeconfig.data.Entry;
 import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
