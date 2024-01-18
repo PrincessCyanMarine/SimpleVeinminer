@@ -3,6 +3,7 @@ package net.cyanmarine.simpleveinminer.commands;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import me.shedaniel.math.Color;
+import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.cyanmarine.simpleveinminer.client.SimpleVeinminerClient;
 import net.cyanmarine.simpleveinminer.commands.argumenttypes.HighlightModesArgumentType;
 import net.cyanmarine.simpleveinminer.config.SimpleConfigClient;
@@ -14,6 +15,8 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 
 public class CommandRegisterClient {
     public CommandRegisterClient() {
+        SimpleVeinminer.LOGGER.info("Initializing client commands");
+
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(literal("veinminingclient")
                     .then(

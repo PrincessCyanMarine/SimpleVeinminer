@@ -3,7 +3,6 @@ package net.cyanmarine.simpleveinminer.commands;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import me.lortseam.completeconfig.data.Entry;
 import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.cyanmarine.simpleveinminer.commands.argumenttypes.BlockIdOrTagArgumentType;
 import net.cyanmarine.simpleveinminer.commands.argumenttypes.RestrictionListArgumentType;
@@ -20,6 +19,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class CommandRegister {
     public CommandRegister() {
+        SimpleVeinminer.LOGGER.info("Initializing server commands");
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(literal("veinmining")
                     .requires(source -> source.hasPermissionLevel(2))
