@@ -3,10 +3,11 @@ package net.cyanmarine.simpleveinminer.commands;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import me.lortseam.completeconfig.data.Entry;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.cyanmarine.simpleveinminer.commands.argumenttypes.BlockIdOrTagArgumentType;
 import net.cyanmarine.simpleveinminer.commands.argumenttypes.RestrictionListArgumentType;
+import net.cyanmarine.simpleveinminer.commands.argumenttypes.TagListArgumentType;
 import net.cyanmarine.simpleveinminer.config.SimpleConfig;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
@@ -20,6 +21,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class CommandRegister {
     public CommandRegister() {
+        SimpleVeinminer.LOGGER.info("Initializing server commands");
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(literal("veinmining")
                     .requires(source -> source.hasPermissionLevel(2))
@@ -52,6 +54,15 @@ public class CommandRegister {
                                                 context.getSource().sendMessage(Text.of("Veinmining \"max blocks\" is " + maxBlocks));
                                                 return 1;
                                             })
+                            ).then(
+                                literal("spread").then(
+                                        argument("value", IntegerArgumentType.integer(1)).executes((context -> {
+                                            int spread = IntegerArgumentType.getInteger(context, "value");
+                                            SimpleVeinminer.getConfig().limits.setRadius(spread);
+                                            context.getSource().sendMessage(Text.of("Veinmining \"spread\" set to " + spread));
+                                            return 1;
+                                        }))
+                                )
                             ).then(
                                     literal("materialBasedLimits").then(
                                             argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -184,6 +195,72 @@ public class CommandRegister {
                                             context.getSource().sendMessage(Text.of("List:"));
                                             list.forEach(s -> context.getSource().sendMessage(Text.of(s)));
                                         }
+                                        return 1;
+                                    })
+                            ).then(
+                                    literal("tags").then(
+                                            literal("enabled").then(
+                                                    argument("value", BoolArgumentType.bool()).executes((context) -> {
+                                                        boolean enabled = BoolArgumentType.getBool(context, "value");
+                                                        SimpleVeinminer.getConfig().restrictions.restrictionTags.setEnabled(enabled);
+                                                        context.getSource().sendMessage(Text.of("Veinmining \"tags enabled\" set to " + (enabled ? "true" : "false")));
+                                                        return 1;
+                                                    })
+                                            ).executes(context -> {
+                                                boolean enabled = SimpleVeinminer.getConfig().restrictions.restrictionTags.enabled;
+                                                context.getSource().sendMessage(Text.of("Veinmining \"tags enabled\" is " + (enabled ? "enabled" : "disabled")));
+                                                return 1;
+                                            })
+                                    ).then(
+                                            literal("add").then(
+                                                    argument("value", StringArgumentType.greedyString()).executes((context) -> {
+                                                        String newValue = StringArgumentType.getString(context, "value");
+//                                                        SimpleVeinminer.LOGGER.info("Adding " + newValue + " to list");
+                                                        SimpleVeinminer.getConfig().restrictions.restrictionTags.add(newValue);
+                                                        context.getSource().sendMessage(Text.of("Added " + newValue + " to list"));
+                                                        return 1;
+                                                    })
+                                            )
+                                    ).then(
+                                            literal("remove").then(
+                                                    argument("value", TagListArgumentType.listItem())
+                                                            .executes((context) -> {
+                                                                String newValue = TagListArgumentType.getListMember(context, "value");
+//                                                                SimpleVeinminer.LOGGER.info("Removing " + newValue + " from list");
+                                                                SimpleVeinminer.getConfig().restrictions.restrictionTags.remove(newValue);
+                                                                context.getSource().sendMessage(Text.of("Removed " + newValue + " from tag list"));
+                                                                return 1;
+                                                            })
+                                            )
+                                    ).then(
+                                            literal("clear").executes((context) -> {
+                                                SimpleVeinminer.getConfig().restrictions.restrictionTags.clear();
+                                                context.getSource().sendMessage(Text.of("Cleared tag list"));
+                                                return 1;
+                                            })
+                                    ).executes((context)->{
+                                        List<String> list = SimpleVeinminer.getConfig().restrictions.restrictionTags.tags;
+                                        if (list.size() == 0) {
+                                            context.getSource().sendMessage(Text.of("List is empty"));
+                                            context.getSource().sendMessage(Text.of("To add tags, use \"/veinminer restrictions tags add <tag>\""));
+                                            return 1;
+                                        } else {
+                                            context.getSource().sendMessage(Text.of("List:"));
+                                            list.forEach(s -> context.getSource().sendMessage(Text.of(s)));
+                                        }
+                                        return 1;
+                                    })
+                            ).then(
+                                    literal("keepToolFromBreaking").then(
+                                            argument("value", BoolArgumentType.bool()).executes((context) -> {
+                                                boolean keepToolsFromBreaking = BoolArgumentType.getBool(context, "value");
+                                                SimpleVeinminer.getConfig().restrictions.setKeepToolFromBreaking(keepToolsFromBreaking);
+                                                context.getSource().sendMessage(Text.of("Veinmining " + (!keepToolsFromBreaking ? "may" : "won't") + " break tools"));
+                                                return 1;
+                                            })
+                                    ).executes(context -> {
+                                        boolean keepToolsFromBreaking = SimpleVeinminer.getConfig().restrictions.keepToolFromBreaking;
+                                        context.getSource().sendMessage(Text.of("Veinmining " + (!keepToolsFromBreaking ? "may" : "won't") + " break tools"));
                                         return 1;
                                     })
                             )

@@ -17,6 +17,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ShearsItem;
@@ -35,12 +36,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class SimpleVeinminer implements ModInitializer {
     public static final String MOD_ID = "simpleveinminer";
@@ -61,33 +62,164 @@ public class SimpleVeinminer implements ModInitializer {
     }));
     static MinecraftServer server;
     private static ArrayList<UUID> playersVeinMining;
+    private static HashMap<UUID, Integer> playersRadius;
 
     public static Identifier getId(String name) {
         return new Identifier(MOD_ID, name);
     }
 
-    public static ArrayList<BlockPos> getBlocksToVeinmine(BlockPos pos, BlockState state, int maxBlocks, PlayerEntity player) {
+    private static BlockState[] STATES = {
+            Blocks.RED_STAINED_GLASS.getDefaultState(),
+            Blocks.ORANGE_STAINED_GLASS.getDefaultState(),
+            Blocks.YELLOW_STAINED_GLASS.getDefaultState(),
+            Blocks.LIME_STAINED_GLASS.getDefaultState(),
+            Blocks.GREEN_STAINED_GLASS.getDefaultState(),
+            Blocks.CYAN_STAINED_GLASS.getDefaultState(),
+            Blocks.LIGHT_BLUE_STAINED_GLASS.getDefaultState(),
+            Blocks.BLUE_STAINED_GLASS.getDefaultState(),
+            Blocks.PURPLE_STAINED_GLASS.getDefaultState(),
+            Blocks.MAGENTA_STAINED_GLASS.getDefaultState(),
+            Blocks.PINK_STAINED_GLASS.getDefaultState(),
+            Blocks.BROWN_STAINED_GLASS.getDefaultState(),
+            Blocks.BLACK_STAINED_GLASS.getDefaultState(),
+            Blocks.GRAY_STAINED_GLASS.getDefaultState(),
+            Blocks.LIGHT_GRAY_STAINED_GLASS.getDefaultState(),
+            Blocks.WHITE_STAINED_GLASS.getDefaultState()
+    };
+
+
+    private static ArrayList<BlockPos> testAroundBlock(@Nullable ArrayList<BlockPos> blocksTested, ArrayList<BlockPos> blocksToBreak, int maxBlocks, World world, BlockState compareTo, int radius, BlockPos currentPos, int depth, boolean debug, @Nullable List<String> tagList, boolean chainReactions, @Nullable PlayerEntity player, SimpleConfig.Restrictions restrictions) {
+        if (blocksTested == null) blocksTested = new ArrayList<>();
+        ArrayList<BlockPos> blocksToCrawl = new ArrayList<>();
+        int x, y, z;
+        for (x = -1; x <= 1; x++)
+            for (y = -1; y <= 1; y++)
+                for (z = -1; z <= 1; z++) {
+                    if (blocksToBreak.size() >= maxBlocks) return blocksToCrawl;
+                    BlockPos testPos = currentPos.add(x, y, z);
+                    if (blocksTested.contains(testPos)) continue;
+                    blocksTested.add(testPos);
+                    //LOGGER.info("Blocks tested: " + blocksTested.size());
+                    //LOGGER.info("Blocks tested: " + blocksTested.size());
+
+                    if (blocksToBreak.size() < maxBlocks && !blocksToBreak.contains(testPos)) {
+                        BlockState testState = world.getBlockState(testPos);
+                        if (isSameBlock(testState, compareTo, tagList, player, restrictions)) {
+                            if ((testState.isOf(Blocks.TALL_GRASS) || testState.isOf(Blocks.TALL_SEAGRASS) || testState.isOf(Blocks.LARGE_FERN)) && (blocksToBreak.contains(testPos.up()) || blocksToBreak.contains(testPos.down()))) continue;
+                            if (chainReactions) {
+                                boolean skip = false;
+                                if (testState.isIn(TagKey.of(Registries.BLOCK.getKey(), SimpleVeinminer.getId("break_bottom_most")))) {
+                                    while (isSameBlock(world.getBlockState(testPos.down()), testState, null,  player, restrictions)) {
+                                        if (blocksToBreak.contains(testPos.down())) {
+                                            skip = true;
+                                            break;
+                                        }
+                                        testPos = testPos.down();
+                                    }
+                                    if (skip) continue;
+                                }
+                                if (testState.isIn(TagKey.of(Registries.BLOCK.getKey(), SimpleVeinminer.getId("break_top_most")))) {
+                                    while (isSameBlock(world.getBlockState(testPos.up()), testState, null, null, null)) {
+                                        if (blocksToBreak.contains(testPos.up())) {
+                                            skip = true;
+                                            break;
+                                        }
+                                        testPos = testPos.up();
+                                    }
+                                    if (skip) continue;
+                                }
+                            }
+                            blocksToBreak.add(testPos);
+                        }
+                        else {
+                            if (debug) {
+                                world.setBlockState(testPos, STATES[depth]);
+                            }
+                            if (!blocksToCrawl.contains(testPos)) {
+                                // LOGGER.info("Adding block to crawl. x: " + testPos.getX() + " y: " + testPos.getY() + " z: " + testPos.getZ() + " depth: " + depth);
+                                blocksToCrawl.add(testPos);
+                            }
+                        }
+                    }
+                }
+        if (radius > 1 && depth == 0) {
+            ArrayList<ArrayList<ArrayList<BlockPos>>> crawlers = new ArrayList<>();
+            crawlers.add(new ArrayList<>());
+            crawlers.get(0).add(new ArrayList<>(blocksToCrawl));
+            for (int d = 0; d < crawlers.size() && d < radius - 1; d++) {
+                int t;
+                t = 0;
+                // LOGGER.info("Crawling through depth " + d);
+                ArrayList<ArrayList<BlockPos>> _crawlers = crawlers.get(d);
+                ArrayList<ArrayList<BlockPos>> next = new ArrayList<>();
+                for (int j = 0; j < _crawlers.size(); j++) {
+                    ArrayList<BlockPos> crawler = _crawlers.get(j);
+                    for (int i = 0; i < crawler.size(); i++) {
+                        t++;
+                        BlockPos pos = crawler.get(i);
+                        ArrayList<BlockPos> newCrawler = (testAroundBlock(blocksTested, blocksToBreak, maxBlocks, world, compareTo, radius, pos, 1 + d, debug, tagList, chainReactions, player, restrictions));
+
+                        if (d < radius - 2 && newCrawler.size() > 0) {
+                            ///LOGGER.info("New crawler size (pre filter): " + newCrawler.size());
+                            ArrayList<BlockPos> filteredCrawler = new ArrayList<BlockPos>();
+                            for (BlockPos newCrawlerPos : newCrawler) {
+                                if (blocksToCrawl.contains(newCrawlerPos)) continue;
+                                filteredCrawler.add(newCrawlerPos);
+                                blocksToCrawl.add(newCrawlerPos);
+                            }
+                            if (!filteredCrawler.isEmpty()) next.add(filteredCrawler);
+                            //LOGGER.info("New crawler size (post filter): " + newCrawler.size());
+                        }
+                    }
+                }
+                //LOGGER.info("Crawled through " + t + " blocks on pass #" + (d + 1));
+                //LOGGER.info("Added " + next.size() + " blocks to the next pass");
+                if (!next.isEmpty()) crawlers.add(next);
+                //LOGGER.info("Crawlers size: " + crawlers.size());
+                //LOGGER.info("Finished crawling " + d);
+            }
+        }
+        return blocksToCrawl;
+    }
+
+    public static ArrayList<BlockPos> getBlocksToVeinmine(BlockPos pos, BlockState state, int maxBlocks, int radius, SimpleConfig.Limits.SPREAD_ACCURACY spreadAccuracy, PlayerEntity player, boolean debug, boolean chainReactions) {
         World world = player.getWorld();
 
-        Block compareTo = state.getBlock();
-
         ArrayList<BlockPos> blocksToBreak = new ArrayList<>();
+        ArrayList<BlockPos> blocksTested = new ArrayList<>();
+        boolean isDebug = debug && !world.isClient();
 
-        int i, x, y, z;
+        SimpleConfig.Restrictions.RestrictionTags rTags = getConfig().restrictions.restrictionTags;
+        List<String> tagList = null;
+        if (rTags.enabled) {
+            Stream<String> tags = state.streamTags().filter((tag)-> {
+                for (String tagString : rTags.tags) {
+                    if (tagString.startsWith("#")) {
+                        tagString = tagString.substring(1);
+                        if (tag.id().toString().matches(tagString)) return true;
+                    }
+                }
+                return false;
+            }).map((tag) -> "#" + tag.id().toString());
+            String id = Registries.BLOCK.getId(state.getBlock()).toString();
+            for (String tagString : rTags.tags) {
+                if (!tagString.startsWith("#") && id.matches(tagString)) tags = Stream.concat(tags, Stream.of(tagString));
+            }
+            tagList = tags.toList();
+        }
+
+        int i, n = 0, m = 0;
 
         blocksToBreak.add(pos);
         for (i = 0; i < maxBlocks && i < blocksToBreak.size(); i++) {
             BlockPos currentPos = blocksToBreak.get(i);
-            for (x = -1; x <= 1; x++)
-                for (y = -1; y <= 1; y++)
-                    for (z = -1; z <= 1; z++) {
-                        if (blocksToBreak.size() >= maxBlocks) return blocksToBreak;
-                        BlockPos testPos = currentPos.add(x, y, z);
-                        if (blocksToBreak.size() < maxBlocks && !blocksToBreak.contains(testPos) && world.getBlockState(testPos).getBlock().equals(compareTo))
-                            blocksToBreak.add(testPos);
-                    }
+            if (blocksToBreak.size() >= maxBlocks) {
+                //LOGGER.info("(early return) Tested " + n + " blocks");
+                return blocksToBreak;
+            }
+            testAroundBlock(spreadAccuracy == SimpleConfig.Limits.SPREAD_ACCURACY.ACCURATE ? null : blocksTested, blocksToBreak, maxBlocks, world, state, radius, currentPos, 0, isDebug, tagList, chainReactions, player, getConfig().restrictions);
         }
-
+        //LOGGER.info("Tested " + blocksTested.size() + " blocks");
         return blocksToBreak;
     }
 
@@ -102,7 +234,7 @@ public class SimpleVeinminer implements ModInitializer {
     }
 
     public static int getMaxBlocks(Item item) {
-        SimpleConfig config = SimpleVeinminer.getConfig();
+        SimpleConfig config = getConfig();
 
         int maxBlocks = config.limits.maxBlocks;
         if (config.limits.materialBasedLimits) {
@@ -119,10 +251,41 @@ public class SimpleVeinminer implements ModInitializer {
         return maxBlocks;
     }
 
+    public static int getVeinminingRadius(PlayerEntity player) {
+        int serverRadius = getConfig().limits.radius;
+        int playerRadius = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT ? SimpleVeinminerClient.getConfig().clientRadius : playersRadius.getOrDefault(player.getUuid(), serverRadius);
+        if (playerRadius <= 0) playerRadius = 1;
+        return Math.min(playerRadius, serverRadius);
+    }
+
+    public static SimpleConfig.Limits.SPREAD_ACCURACY getSpreadAccuracy() {
+        return getConfig().limits.spreadAccuracy;
+    }
+
+    public static boolean isDebug() {
+        return getConfig().debug;
+    }
+
+    private static boolean isSameBlock(BlockState state, BlockState compareTo, @Nullable List<String> tagList, @Nullable PlayerEntity player, @Nullable SimpleConfig.Restrictions restrictions) {
+        if (state.getBlock().equals(compareTo.getBlock())) return true;
+        if (state.isAir() || compareTo.isAir()) return false;
+        if (player != null && restrictions != null && !canVeinmine(player, null, null, state, restrictions)) return false;
+        if (tagList != null) {
+            String id = Registries.BLOCK.getId(state.getBlock()).toString();
+            for (String tag : tagList) {
+                if (tag.startsWith("#")) {
+                    Identifier identifier = new Identifier(tag.substring(1));
+                    if (state.isIn(TagKey.of(Registries.BLOCK.getKey(), identifier))) return true;
+                } else if (id.matches(tag)) return true;
+            }
+        }
+        return false;
+    }
+
     private static boolean listIncludes(Block block, SimpleConfig.Restrictions restrictions) {
         for (int i = 0; i < restrictions.restrictionList.list.size(); i++) {
             String name = restrictions.restrictionList.list.get(i);
-            Identifier identifier = new Identifier(name.replaceAll("[^a-z0-9-_:]", ""));
+            Identifier identifier = new Identifier(name.replaceAll("[^a-z0-9-_:/]", ""));
             if (name.startsWith("#")) {
                 if (block.getDefaultState().isIn(TagKey.of(Registries.BLOCK.getKey(), identifier))) return true;
             } else {
@@ -133,7 +296,7 @@ public class SimpleVeinminer implements ModInitializer {
         return false;
     }
 
-    public static boolean canVeinmine(PlayerEntity player, World world, BlockPos pos, BlockState state, SimpleConfig.Restrictions restrictions) {
+    public static boolean canVeinmine(PlayerEntity player, @Nullable World world, @Nullable BlockPos pos, BlockState state, SimpleConfig.Restrictions restrictions) {
         if (restrictions.creativeBypass && player.isCreative()) return true;
 
         Item hand = player.getMainHandStack().getItem();
@@ -162,7 +325,7 @@ public class SimpleVeinminer implements ModInitializer {
             return false;
         }
 
-        if (sendMessage) player.sendMessage(Text.of(""), true);
+        // if (sendMessage) player.sendMessage(Text.of(""), true);
 
         return true;
     }
@@ -197,6 +360,10 @@ public class SimpleVeinminer implements ModInitializer {
             playersVeinMining.remove(player.getUuid());
     }
 
+    private static void setPlayerVeinminingRadius(PlayerEntity player, int radius) {
+        playersRadius.put(player.getUuid(), radius);
+    }
+
     public static SimpleConfig getConfig() {
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
             return SimpleVeinminerClient.getConfig();
@@ -210,13 +377,20 @@ public class SimpleVeinminer implements ModInitializer {
         };
     }
 
+
+
     @Override
     public void onInitialize() {
         // CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> new ConfigCommand<ServerCommandSource>(CONFIG).register(dispatcher, p -> p.hasPermissionLevel(2)));
         playersVeinMining = new ArrayList<>();
+        playersRadius = new HashMap<>();
         ServerPlayNetworking.registerGlobalReceiver(Constants.NETWORKING_VEINMINE, (server, player, handler, buf, sender) -> {
             boolean isVeinMining = buf.readBoolean();
             server.execute(() -> setVeinmining(player, isVeinMining));
+        });
+        ServerPlayNetworking.registerGlobalReceiver(Constants.NETWORKING_RADIUS, (server, player, handler, buf, sender) -> {
+            int radius = buf.readInt();
+            server.execute(() -> setPlayerVeinminingRadius(player, radius));
         });
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {

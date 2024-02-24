@@ -1,32 +1,35 @@
 package net.cyanmarine.simpleveinminer.client;
 
-import me.lortseam.completeconfig.gui.ConfigScreenBuilder;
 import net.cyanmarine.simpleveinminer.Constants;
 import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.cyanmarine.simpleveinminer.commands.CommandRegisterClient;
 import net.cyanmarine.simpleveinminer.config.SimpleConfig;
 import net.cyanmarine.simpleveinminer.config.SimpleConfigClient;
-import net.cyanmarine.simpleveinminer.gui.ScreenBuilderType;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.shape.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -38,7 +41,13 @@ public class SimpleVeinminerClient implements ClientModInitializer {
     static SimpleConfig.SimpleConfigCopy worldConfig;
     private static SimpleConfigClient config;
     public static KeyBinding veinMineKeybind = KeyBindingHelper.registerKeyBinding(new StickyKeyBinding("key.simpleveinminer.veinminingKey", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.simpleveinminer.veinminerCategory", () -> config.keybindToggles));
+    public static KeyBinding increaseRadius = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.simpleveinminer.increaseRadius", GLFW.GLFW_KEY_RIGHT_BRACKET, "key.simpleveinminer.veinminerCategory"));
+    public static KeyBinding decreaseRadius = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.simpleveinminer.decreaseRadius", GLFW.GLFW_KEY_LEFT_BRACKET, "key.simpleveinminer.veinminerCategory"));
+    public static KeyBinding freezePreview = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.simpleveinminer.freezePreview", GLFW.GLFW_KEY_UNKNOWN, "key.simpleveinminer.veinminerCategory"));
     public static boolean veinMining;
+    public static boolean previewFrozen = false;
+    public static BlockState currentlyOutliningState;
+    public static ArrayList<BlockPos> blocksToHighlight;
 
     public static SimpleConfig.SimpleConfigCopy getWorldConfig() {
         if (worldConfig == null) return SimpleConfig.SimpleConfigCopy.from(config);
@@ -102,6 +111,47 @@ public class SimpleVeinminerClient implements ClientModInitializer {
         }
     }
 
+    public static void drawOutline(BufferBuilder buffer, Matrix4f positionMatrix, float red, float green, float blue, float alpha, VoxelShape shape, @Nullable BlockPos pos, @Nullable List<BlockPos> blocks, boolean ignoreNeighbors, MatrixStack matrices) {
+        shape.forEachEdge((_minX, _minY, _minZ, _maxX, _maxY, _maxZ) -> {
+            float minX = (float)_minX;
+            float minY = (float)_minY;
+            float minZ = (float)_minZ;
+            float maxX = (float)_maxX;
+            float maxY = (float)_maxY;
+            float maxZ = (float)_maxZ;
+
+            float size = 0.01f;
+
+            buffer.vertex(positionMatrix, minX, minY + size, minZ).color(red, green, blue, alpha).texture(minX, minY).next();
+            buffer.vertex(positionMatrix, minX, minY - size, minZ).color(red, green, blue, alpha).texture(minX, maxY).next();
+            buffer.vertex(positionMatrix, maxX, minY - size, minZ).color(red, green, blue, alpha).texture(maxX, maxY).next();
+            buffer.vertex(positionMatrix, maxX, minY + size, minZ).color(red, green, blue, alpha).texture(maxX, minY).next();
+
+            buffer.vertex(positionMatrix, minX - size, maxY, maxZ).color(red, green, blue, alpha).texture(minX, minY).next();
+            buffer.vertex(positionMatrix, minX - size, minY, maxZ).color(red, green, blue, alpha).texture(minX, maxY).next();
+            buffer.vertex(positionMatrix, minX + size, minY, maxZ).color(red, green, blue, alpha).texture(maxX, maxY).next();
+            buffer.vertex(positionMatrix, minX + size, maxY, maxZ).color(red, green, blue, alpha).texture(maxX, minY).next();
+
+            buffer.vertex(positionMatrix, minX, minY + size, minZ).color(red, green, blue, alpha).texture(minX, minY).next();
+            buffer.vertex(positionMatrix, minX, minY - size, minZ).color(red, green, blue, alpha).texture(minX, maxY).next();
+            buffer.vertex(positionMatrix, minX, minY - size, maxZ).color(red, green, blue, alpha).texture(maxX, maxY).next();
+            buffer.vertex(positionMatrix, minX, minY + size, maxZ).color(red, green, blue, alpha).texture(maxX, minY).next();
+        });
+    }
+
+    private void changeClientRadius(MinecraftClient client, int change) {
+        SimpleConfigClient config = SimpleVeinminerClient.getConfig();
+
+        int newRadius = MathHelper.clamp(config.clientRadius + change, 1, config.limits.radius);
+        config.setClientRadius(newRadius);
+        client.player.sendMessage(Text.translatable("messages.simpleveinminer.radiusChanged", newRadius), true);
+
+
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeInt(newRadius);
+        ClientPlayNetworking.send(Constants.NETWORKING_RADIUS, buf);
+    }
+
     @Override
     public void onInitializeClient() {
         veinMining = false;
@@ -121,6 +171,14 @@ public class SimpleVeinminerClient implements ClientModInitializer {
                 PacketByteBuf buf = PacketByteBufs.create();
                 buf.writeBoolean(veinMining);
                 ClientPlayNetworking.send(Constants.NETWORKING_VEINMINE, buf);
+            }
+            if (increaseRadius.wasPressed())
+                changeClientRadius(client, 1);
+            if (decreaseRadius.wasPressed())
+                changeClientRadius(client, -1);
+            if (freezePreview.wasPressed()) {
+                previewFrozen = !previewFrozen;
+                client.player.sendMessage(previewFrozen ? Text.translatable("messages.simpleveinminer.previewFrozen") : Text.translatable("messages.simpleveinminer.previewUnfrozen"), true);
             }
         });
 

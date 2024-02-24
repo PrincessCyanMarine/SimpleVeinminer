@@ -19,6 +19,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.RotationAxis;
@@ -30,6 +31,7 @@ import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -38,14 +40,12 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.SortedSet;
 
-import static net.cyanmarine.simpleveinminer.client.SimpleVeinminerClient.drawBox;
+import static net.cyanmarine.simpleveinminer.client.SimpleVeinminerClient.*;
 
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererMixin {
     Item holding;
     BlockPos currentlyOutliningPos;
-    BlockState currentlyOutliningState;
-    ArrayList<BlockPos> blocksToHighlight;
     ArrayList<BlockPos> beingBroken;
     float red, green, blue, alpha;
     int delay1 = 0;
@@ -68,24 +68,96 @@ public abstract class WorldRendererMixin {
     @Shadow
     protected abstract void removeBlockBreakingInfo(BlockBreakingInfo info);
 
+    private void renderPreview(PlayerEntity player, MatrixStack matrices) {
+            assert world != null;
+            assert blocksToHighlight != null;
+            SimpleConfigClient config = SimpleVeinminerClient.getConfig();
+            SimpleConfigClient.Highlight outline = config.highlight;
+
+          /*if (outline.mode == SimpleConfigClient.Highlight.MODES.OUTLINE)
+                    for (BlockPos currentPos : blocksToHighlight)
+                        outline(matrices, vertexConsumer, entity, d, e, f, currentPos, world.getBlockState(currentPos), red, green, blue, alpha);
+                else*/ {
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder buffer = tessellator.getBuffer();
+
+
+
+            RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
+            RenderSystem.setShaderTexture(0, SimpleVeinminer.getId("highlight.png"));
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+            RenderSystem.depthFunc(GL11.GL_ALWAYS);
+            RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.enableBlend();
+            RenderSystem.disableCull();
+
+            buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+
+            Camera camera = client.gameRenderer.getCamera();
+
+            alpha = Math.max(0.11f, alpha); // Prevents the highlight from being invisible
+
+            boolean b = SimpleVeinminerClient.getConfig().highlight.highlightAllSides;
+
+
+
+            for (BlockPos highlight : blocksToHighlight) {
+                Vec3d targetPosition = new Vec3d(highlight.getX(), highlight.getY(), highlight.getZ());
+                Vec3d transformedPosition = targetPosition.subtract(camera.getPos());
+
+                MatrixStack matrixStack = new MatrixStack();
+                matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
+                matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
+                matrixStack.translate(transformedPosition.x, transformedPosition.y, transformedPosition.z);
+                Matrix4f positionMatrix = matrixStack.peek().getPositionMatrix();
+
+                VoxelShape shape = world.getBlockState(highlight).getOutlineShape(world, highlight, ShapeContext.of(player));
+
+
+                switch (outline.mode) {
+                    case SHAPE -> shape.forEachBox((minX, minY, minZ, maxX, maxY, maxZ) -> {
+                        Box box = new Box(minX, minY, minZ, maxX, maxY, maxZ);
+                        drawBox(buffer, positionMatrix, red, green, blue, alpha, box, highlight, blocksToHighlight, b);
+                    });
+                    case CUBE ->
+                        drawBox(buffer, positionMatrix, red, green, blue, alpha, new Box(0, 0, 0, 1, 1, 1), highlight, blocksToHighlight, b);
+                    case CUBE_SHAPE ->
+                        drawBox(buffer, positionMatrix, red, green, blue, alpha, shape.getBoundingBox(), highlight, blocksToHighlight, b);
+                    case OUTLINE -> {
+                        drawOutline(buffer, positionMatrix, red, green, blue, alpha, shape, highlight, blocksToHighlight, b, matrices);
+                    }
+                }
+            }
+
+            tessellator.draw();
+
+            RenderSystem.depthFunc(GL11.GL_LEQUAL);
+            RenderSystem.disableBlend();
+            RenderSystem.enableCull();
+        }
+    }
+
     @Inject(at = @At("HEAD"), method = "drawBlockOutline(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/entity/Entity;DDDLnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V", cancellable = true)
     public void drawBlockOutline(MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos pos, BlockState state, CallbackInfo ci) {
         //SimpleVeinminerClient.LOGGER.info(SimpleVeinminerClient.isInstalledOnServerSide.get()?"true":"false");
         if (SimpleVeinminerClient.isInstalledOnServerSide.get() && entity.isPlayer()) {
             PlayerEntity player = (PlayerEntity) entity;
-            SimpleConfigClient.Highlight outline = SimpleVeinminerClient.getConfig().highlight;
+            SimpleConfigClient config = SimpleVeinminerClient.getConfig();
+            SimpleConfigClient.Highlight outline = config.highlight;
             SimpleConfig.SimpleConfigCopy worldConfig = SimpleVeinminerClient.getWorldConfig();
-            if ((SimpleVeinminerClient.veinMineKeybind.isPressed() || (SimpleVeinminerClient.isVeinMiningServerSide && player.isSneaking())) && SimpleVeinminer.canVeinmine(player, world, pos, state, worldConfig.restrictions) && outline.doHighlight) {
+            int updateRate = SimpleVeinminerClient.getConfig().highlight.updateRate;
+            if ((outline.doHighlight || config.hudDisplay.showCount || config.hudDisplay.showBlock) && (SimpleVeinminerClient.veinMineKeybind.isPressed() || (SimpleVeinminerClient.isVeinMiningServerSide && player.isSneaking())) && SimpleVeinminer.canVeinmine(player, world, pos, state, worldConfig.restrictions)) {
                 ci.cancel();
 
                 assert client.player != null;
                 Item hand = client.player.getMainHandStack().getItem();
 
-                if (delay1 % 20 == 0 || !pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState) || !hand.equals(holding)) {
+                if (!previewFrozen && (config.isChanged() || (updateRate > 0 && delay1 % updateRate == 0) || !pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState) || !hand.equals(holding))) {
+                    reset();
                     holding = hand;
                     Color outlineColor = outline.color;
 
-                    blocksToHighlight = getBlocksToOutline(pos, state, player, outline.onlyExposed);
+                    blocksToHighlight = getBlocksToOutline(pos, state, player, /*outline.onlyExposed*/ false);
                     currentlyOutliningPos = pos;
                     currentlyOutliningState = state;
 
@@ -94,74 +166,20 @@ public abstract class WorldRendererMixin {
                     blue = outlineColor.getBlue() / 255.0f;
                     alpha = ((float) outline.opacity) / 100.0f;
 
-                    delay1 = 0;
-                    delay2 = 0;
                     resetCountdown = true;
                 }
-
-                assert world != null;
-
-                if (outline.mode == SimpleConfigClient.Highlight.MODES.OUTLINE)
+                if (outline.doHighlight && outline.mode == SimpleConfigClient.Highlight.MODES.OUTLINE) {
                     for (BlockPos currentPos : blocksToHighlight)
                         outline(matrices, vertexConsumer, entity, d, e, f, currentPos, world.getBlockState(currentPos), red, green, blue, alpha);
-                else {
-                    Tessellator tessellator = Tessellator.getInstance();
-                    BufferBuilder buffer = tessellator.getBuffer();
-
-                    RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
-                    RenderSystem.setShaderTexture(0, SimpleVeinminer.getId("highlight.png"));
-                    RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-                    RenderSystem.depthFunc(GL11.GL_ALWAYS);
-                    RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-                    RenderSystem.enableBlend();
-                    RenderSystem.disableCull();
-
-                    Camera camera = client.gameRenderer.getCamera();
-
-                    alpha = Math.max(0.11f, alpha); // Prevents the highlight from being invisible
-
-                    buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
-                    boolean b = SimpleVeinminerClient.getConfig().highlight.highlightAllSides;
-
-                    for (BlockPos highlight : blocksToHighlight) {
-                        Vec3d targetPosition = new Vec3d(highlight.getX(), highlight.getY(), highlight.getZ());
-                        Vec3d transformedPosition = targetPosition.subtract(camera.getPos());
-
-                        MatrixStack matrixStack = new MatrixStack();
-                        matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
-                        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
-                        matrixStack.translate(transformedPosition.x, transformedPosition.y, transformedPosition.z);
-                        Matrix4f positionMatrix = matrixStack.peek().getPositionMatrix();
-
-                        VoxelShape shape = world.getBlockState(highlight).getOutlineShape(world, highlight, ShapeContext.of(player));
-
-
-                        switch (outline.mode) {
-                            case SHAPE -> shape.forEachBox((minX, minY, minZ, maxX, maxY, maxZ) -> {
-                                Box box = new Box(minX, minY, minZ, maxX, maxY, maxZ);
-                                drawBox(buffer, positionMatrix, red, green, blue, alpha, box, highlight, blocksToHighlight, b);
-                            });
-                            case CUBE ->
-                                    drawBox(buffer, positionMatrix, red, green, blue, alpha, new Box(0, 0, 0, 1, 1, 1), highlight, blocksToHighlight, b);
-                            case CUBE_SHAPE ->
-                                    drawBox(buffer, positionMatrix, red, green, blue, alpha, shape.getBoundingBox(), highlight, blocksToHighlight, b);
-                        }
-                    }
-
-                    tessellator.draw();
-
-                    RenderSystem.depthFunc(GL11.GL_LEQUAL);
-                    RenderSystem.disableBlend();
-                    RenderSystem.enableCull();
                 }
-
                 delay1++;
-            } else if (currentlyOutliningPos != null) {
+            } else if (!previewFrozen && currentlyOutliningPos != null) {
                 reset();
             }
         }
     }
 
+    @Unique
     private void reset() {
         clearBlockBreakingProgressions();
         currentlyOutliningPos = null;
@@ -176,8 +194,9 @@ public abstract class WorldRendererMixin {
     @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/render/WorldRenderer;render(Lnet/minecraft/client/util/math/MatrixStack;FJZLnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/GameRenderer;Lnet/minecraft/client/render/LightmapTextureManager;Lorg/joml/Matrix4f;)V")
     public void renderInject(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f positionMatrix, CallbackInfo ci) {
         ClientPlayerEntity player = client.player;
+        SimpleConfigClient config = SimpleVeinminerClient.getConfig();
         if (player == null || world == null) return;
-        if (resetCountdown && ++delay2 % 20 == 0) {
+        if (!previewFrozen && resetCountdown && (config.highlight.updateRate > 0 && ++delay2 % config.highlight.updateRate == 0)) {
             if (world.getBlockState(SimpleVeinminer.getBlockHitResult(client.player).getBlockPos()).isAir()) {
                 reset();
                 return;
@@ -186,7 +205,7 @@ public abstract class WorldRendererMixin {
         }
 
         clearBlockBreakingProgressions();
-        if (blocksToHighlight != null && currentlyOutliningPos != null && SimpleVeinminerClient.veinMining && SimpleVeinminerClient.getConfig().showMiningProgress) {
+        if (blocksToHighlight != null && currentlyOutliningPos != null && SimpleVeinminerClient.veinMining && config.showMiningProgress) {
             SortedSet<BlockBreakingInfo> blockBreakingSet = blockBreakingProgressions.get(currentlyOutliningPos.asLong());
             if (blockBreakingSet != null) {
                 BlockBreakingInfo blockBreakingProgress = blockBreakingSet.last();
@@ -202,6 +221,19 @@ public abstract class WorldRendererMixin {
                     newBlockBreakingProgress.setStage(stage);
                     (blockBreakingProgressions.computeIfAbsent(currentPos.asLong(), (l) -> Sets.newTreeSet())).add(newBlockBreakingProgress);
                 }
+
+            }
+        }
+    }
+    @Inject(at = @At("TAIL"), method = "Lnet/minecraft/client/render/WorldRenderer;render(Lnet/minecraft/client/util/math/MatrixStack;FJZLnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/GameRenderer;Lnet/minecraft/client/render/LightmapTextureManager;Lorg/joml/Matrix4f;)V")
+    public void renderInjectTail(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f positionMatrix, CallbackInfo ci) {
+        SimpleConfigClient config = SimpleVeinminerClient.getConfig();
+        if (blocksToHighlight != null && config.highlight.doHighlight) {
+            HitResult hitResult = client.crosshairTarget;
+            if (!previewFrozen && (hitResult == null || hitResult.getType() != HitResult.Type.BLOCK)) reset();
+            else {
+                if (config.highlight.mode != SimpleConfigClient.Highlight.MODES.OUTLINE)
+                    renderPreview(client.player, matrices);
             }
         }
     }
@@ -214,9 +246,7 @@ public abstract class WorldRendererMixin {
         Set<BlockBreakingInfo> set = this.blockBreakingProgressions.get(l);
         if (set != null) {
             set.remove(info);
-            if (set.isEmpty()) {
-                this.blockBreakingProgressions.remove(l);
-            }
+            if (set.isEmpty()) this.blockBreakingProgressions.remove(l);
         }
     }
 
@@ -236,7 +266,7 @@ public abstract class WorldRendererMixin {
     }
 
     private ArrayList<BlockPos> getBlocksToOutline(BlockPos pos, BlockState state, PlayerEntity player, boolean onlyExposed) {
-        ArrayList<BlockPos> willVeinmine = SimpleVeinminer.getBlocksToVeinmine(pos, state, SimpleVeinminer.getMaxBlocks(holding), player);
+        ArrayList<BlockPos> willVeinmine = SimpleVeinminer.getBlocksToVeinmine(pos, state, SimpleVeinminer.getMaxBlocks(holding), SimpleVeinminer.getVeinminingRadius(player), SimpleVeinminer.getSpreadAccuracy(), player, SimpleVeinminer.isDebug(), getConfig().restrictions.onlyBreakBottomBlockForChainReactions);
         if (!onlyExposed) return willVeinmine;
         ArrayList<BlockPos> willOutline = new ArrayList<>();
 

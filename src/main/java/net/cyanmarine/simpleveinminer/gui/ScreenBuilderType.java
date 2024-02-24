@@ -1,7 +1,6 @@
 package net.cyanmarine.simpleveinminer.gui;
 
 import me.lortseam.completeconfig.gui.ConfigScreenBuilder;
-//import me.lortseam.completeconfig.gui.yacl.YaclScreenBuilder;
 import me.lortseam.completeconfig.gui.cloth.ClothConfigScreenBuilder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 

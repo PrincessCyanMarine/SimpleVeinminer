@@ -2,23 +2,140 @@ package net.cyanmarine.simpleveinminer.commands;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import me.shedaniel.math.Color;
 import net.cyanmarine.simpleveinminer.client.SimpleVeinminerClient;
 import net.cyanmarine.simpleveinminer.commands.argumenttypes.HighlightModesArgumentType;
 import net.cyanmarine.simpleveinminer.config.SimpleConfigClient;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class CommandRegisterClient {
+    private int setVerticalAnchor(CommandContext<FabricClientCommandSource> context, SimpleConfigClient.HudDisplay.VERTICAL_ANCHOR anchor) {
+        SimpleVeinminerClient.getConfig().setHudVerticalAnchor(anchor);
+        context.getSource().getPlayer().sendMessage(Text.of("Hud vertical anchor set to top"));
+        return 1;
+    }
+    private int setHorizontalAnchor(CommandContext<FabricClientCommandSource> context, SimpleConfigClient.HudDisplay.HORIZONTAL_ANCHOR anchor) {
+        SimpleVeinminerClient.getConfig().setHudHorizontalAnchor(anchor);
+        context.getSource().getPlayer().sendMessage(Text.of("Hud horizontal anchor set to top"));
+        return 1;
+    }
+
     public CommandRegisterClient() {
+        SimpleVeinminerClient.LOGGER.info("Initializing client commands");
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            dispatcher.register(literal("veinminingclient")
+            dispatcher.register(literal("veinminingclient").then(
+                            literal("hud").then(
+                                    literal("position").then(
+                                            literal("x").then(
+                                                    argument("value", IntegerArgumentType.integer())
+                                                            .executes((context) -> {
+                                                                int x = IntegerArgumentType.getInteger(context, "value");
+                                                                SimpleVeinminerClient.getConfig().setHudX(x);
+                                                                context.getSource().getPlayer().sendMessage(Text.of("Hud x position set to " + x));
+                                                                return 1;
+                                                            })
+                                            )
+                                    ).then(
+                                            literal("y").then(
+                                                    argument("value", IntegerArgumentType.integer())
+                                                            .executes((context) -> {
+                                                                int y = IntegerArgumentType.getInteger(context, "value");
+                                                                SimpleVeinminerClient.getConfig().setHudY(y);
+                                                                context.getSource().getPlayer().sendMessage(Text.of("Hud y position set to " + y));
+                                                                return 1;
+                                                            })
+                                            )
+                                    ).executes((context) -> {
+                                        int x = SimpleVeinminerClient.getConfig().hudDisplay.x;
+                                        int y = SimpleVeinminerClient.getConfig().hudDisplay.y;
+                                        context.getSource().getPlayer().sendMessage(Text.of("Hud position is " + x + ", " + y));
+                                        return 1;
+                                    })
+                            ).then(
+                                    literal("anchor").then(
+                                            literal("vertical").then(
+                                                    literal("top").executes((context) -> setVerticalAnchor(context, SimpleConfigClient.HudDisplay.VERTICAL_ANCHOR.TOP))
+                                            ).then(
+                                                    literal("center").executes((context) -> setVerticalAnchor(context, SimpleConfigClient.HudDisplay.VERTICAL_ANCHOR.CENTER))
+                                            ).then(
+                                                    literal("bottom").executes((context) -> setVerticalAnchor(context, SimpleConfigClient.HudDisplay.VERTICAL_ANCHOR.BOTTOM))
+                                            )
+                                    ).then(
+                                            literal("horizontal").then(
+                                                    literal("left").executes((context) -> setHorizontalAnchor(context, SimpleConfigClient.HudDisplay.HORIZONTAL_ANCHOR.LEFT))
+                                            ).then(
+                                                    literal("center").executes((context) -> setHorizontalAnchor(context, SimpleConfigClient.HudDisplay.HORIZONTAL_ANCHOR.CENTER))
+                                            ).then(
+                                                    literal("right").executes((context) -> setHorizontalAnchor(context, SimpleConfigClient.HudDisplay.HORIZONTAL_ANCHOR.RIGHT))
+                                            )
+                                    )
+                            ).then(
+                                    literal("show").then(
+                                            literal("block").then(
+                                                    argument("value", BoolArgumentType.bool()).executes((context) -> {
+                                                        boolean showBlock = BoolArgumentType.getBool(context, "value");
+                                                        SimpleVeinminerClient.getConfig().setHudShowBlock(showBlock);
+                                                        context.getSource().getPlayer().sendMessage(Text.of("Hud \"showBlock\" set to " + (showBlock ? "true" : "false")));
+                                                        return 1;
+                                                    })
+                                            ).executes(context -> {
+                                                boolean showBlock = SimpleVeinminerClient.getConfig().hudDisplay.showBlock;
+                                                context.getSource().getPlayer().sendMessage(Text.of((showBlock ? "Showing block" : "Not showing block")));
+                                                return 1;
+                                            })
+                                    ).then(
+                                            literal("count").then(
+                                                    argument("value", BoolArgumentType.bool()).executes((context) -> {
+                                                        boolean showCount = BoolArgumentType.getBool(context, "value");
+                                                        SimpleVeinminerClient.getConfig().setHudShowCount(showCount);
+                                                        context.getSource().getPlayer().sendMessage(Text.of("Hud \"showCount\" set to " + (showCount ? "true" : "false")));
+                                                        return 1;
+                                                    })
+                                            ).executes(context -> {
+                                                boolean showCount = SimpleVeinminerClient.getConfig().hudDisplay.showCount;
+                                                context.getSource().getPlayer().sendMessage(Text.of((showCount ? "Showing count" : "Not showing count")));
+                                                return 1;
+                                            })
+                                    )
+                            ).then(
+                                    literal("spacing").then(
+                                            argument("value", IntegerArgumentType.integer())
+                                                    .executes((context) -> {
+                                                        int spacing = IntegerArgumentType.getInteger(context, "value");
+                                                        SimpleVeinminerClient.getConfig().setHudBlockNumberSpacing(spacing);
+                                                        context.getSource().getPlayer().sendMessage(Text.of("Hud block number spacing set to " + spacing));
+                                                        return 1;
+                                                    })
+                                    ).executes(context -> {
+                                        int spacing = SimpleVeinminerClient.getConfig().hudDisplay.blockNumberSpacing;
+                                        context.getSource().getPlayer().sendMessage(Text.of("Hud block number spacing is " + spacing));
+                                        return 1;
+                                    })
+                            )
+                    )
                     .then(
                             literal("highlight")
                                     .then(
+                                            literal("updateRate").then(
+                                                    argument("value", IntegerArgumentType.integer(0))
+                                                            .executes((context) -> {
+                                                                int updateRate = IntegerArgumentType.getInteger(context, "value");
+                                                                SimpleVeinminerClient.getConfig().setHighlightUpdateRate(updateRate);
+                                                                context.getSource().getPlayer().sendMessage(Text.of("Highlight update rate set to " + updateRate));
+                                                                return 1;
+                                                            })
+                                            ).executes((context) -> {
+                                                int updateRate = SimpleVeinminerClient.getConfig().highlight.updateRate;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Highlight update rate is " + updateRate));
+                                                return 1;
+                                            })
+                                    ).then(
                                             literal("opacity")
                                                     .then(
                                                             argument("value", IntegerArgumentType.integer(1, 10000))
@@ -61,7 +178,7 @@ public class CommandRegisterClient {
                                                 context.getSource().getPlayer().sendMessage(Text.of((highlightAllSides ? "Highlighting all sides" : "Not highlighting connected sides")));
                                                 return 1;
                                             })
-                                    ).then(
+                                    )/*.then(
                                             literal("onlyExposed").then(
                                                     argument("value", BoolArgumentType.bool()).executes((context) -> {
                                                         boolean onlyExposed = BoolArgumentType.getBool(context, "value");
@@ -74,7 +191,7 @@ public class CommandRegisterClient {
                                                 context.getSource().getPlayer().sendMessage(Text.of((onlyExposed ? "Highlighting only exposed blocks" : "Highlighting all blocks")));
                                                 return 1;
                                             })
-                                    ).then(
+                                    )*/.then(
                                             literal("color").then(
                                                     argument("r", IntegerArgumentType.integer(0, 255)).then(
                                                             argument("g", IntegerArgumentType.integer(0, 255)).then(

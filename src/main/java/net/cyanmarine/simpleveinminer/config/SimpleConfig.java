@@ -5,7 +5,6 @@ import me.lortseam.completeconfig.api.ConfigEntries;
 import me.lortseam.completeconfig.api.ConfigEntry;
 import me.lortseam.completeconfig.api.ConfigGroup;
 import me.lortseam.completeconfig.data.Config;
-import me.lortseam.completeconfig.data.Entry;
 import net.cyanmarine.simpleveinminer.SimpleVeinminer;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
@@ -17,6 +16,8 @@ import java.util.List;
 public class SimpleConfig extends Config implements ConfigContainer {
     @ConfigEntry
     public boolean placeInInventory = false;
+    @ConfigEntry
+    public boolean debug = false;
     @Transitive
     public Limits limits = new Limits();
     @Transitive
@@ -52,6 +53,10 @@ public class SimpleConfig extends Config implements ConfigContainer {
         this.placeInInventory = placeInInventory;
         syncConfig();
     }
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+        syncConfig();
+    }
 
     public PacketByteBuf WritePacket() {
         PacketByteBuf buf = PacketByteBufs.create();
@@ -72,6 +77,13 @@ public class SimpleConfig extends Config implements ConfigContainer {
     public static class Limits implements ConfigGroup {
         public int maxBlocks = 150;
         public boolean materialBasedLimits = false;
+        @ConfigEntry.BoundedInteger(min = 1)
+        public int radius = 1;
+        public SPREAD_ACCURACY spreadAccuracy = SPREAD_ACCURACY.ACCURATE;
+
+        public enum SPREAD_ACCURACY {
+            KINDA_ACCURATE, ACCURATE
+        }
 
         public void setMaxBlocks(int maxBlocks) {
             this.maxBlocks = maxBlocks;
@@ -82,6 +94,17 @@ public class SimpleConfig extends Config implements ConfigContainer {
             this.materialBasedLimits = materialBasedLimits;
             syncConfig();
         }
+
+        public void setRadius(int radius) {
+            if (radius < 1) radius = 1;
+            this.radius = radius;
+            syncConfig();
+        }
+
+        public void setAccurateSpread(SPREAD_ACCURACY spreadAccuracy) {
+            this.spreadAccuracy = spreadAccuracy;
+            syncConfig();
+        }
     }
 
     @ConfigEntries(includeAll = true)
@@ -89,10 +112,19 @@ public class SimpleConfig extends Config implements ConfigContainer {
         public boolean canVeinmineHungry = false;
         public boolean canVeinmineWithEmptyHand = true;
         public boolean creativeBypass = false;
+        public boolean keepToolFromBreaking = true;
+        public boolean onlyBreakBottomBlockForChainReactions = false;
         @ConfigEntry(comment = "Will only allow to veinmine wood using an axe, dirt using a shovel, stone using a pickaxe, etc.")
         public boolean canOnlyUseSuitableTools = false;
         @Transitive
         public RestrictionList restrictionList = new RestrictionList();
+        @Transitive
+        public RestrictionTags restrictionTags = new RestrictionTags();
+
+        public void setKeepToolFromBreaking(boolean keepToolFromBreaking) {
+            this.keepToolFromBreaking = keepToolFromBreaking;
+            syncConfig();
+        }
 
         public void setCanVeinmineWithEmptyHand(boolean canVeinmineWithEmptyHand) {
             this.canVeinmineWithEmptyHand = canVeinmineWithEmptyHand;
@@ -114,6 +146,44 @@ public class SimpleConfig extends Config implements ConfigContainer {
             syncConfig();
         }
 
+        @ConfigEntries(includeAll = true)
+        public static class RestrictionTags implements ConfigGroup {
+            public boolean enabled = true;
+            public List<String> tags = Arrays.asList("#c:.+_ores", "minecraft:(tall_)?grass", "minecraft:(large_)?fern");
+
+            public void setEnabled(boolean enabled) {
+                this.enabled = enabled;
+                syncConfig();
+            }
+
+            public void setTags(List<String> tags) {
+                this.tags = tags;
+                syncConfig();
+            }
+
+            public void add(String value) {
+                if (this.tags.contains(value)) return;
+                // this.list.add(value); // Doesn't work for some reason
+                ArrayList<String> newList = new ArrayList<>(this.tags);
+                newList.add(value);
+                this.setTags(newList);
+                syncConfig();
+            }
+
+            public void remove(String value) {
+                if (!this.tags.contains(value)) return;
+                ArrayList<String> newList = new ArrayList<>(this.tags);
+                newList.remove(value);
+                this.setTags(newList);
+                syncConfig();
+            }
+
+            public void clear() {
+                this.tags = new ArrayList<>();
+                syncConfig();
+            }
+        }
+
         @ConfigEntries(includeAll = false)
         public static class RestrictionList implements ConfigGroup {
             @ConfigEntry(comment = "Valid values are NONE, BLACKLIST, and WHITELIST")
@@ -128,13 +198,13 @@ public class SimpleConfig extends Config implements ConfigContainer {
             }
 
             public void add(String value) {
-                SimpleVeinminer.LOGGER.info(value);
+//                SimpleVeinminer.LOGGER.info(value);
                 if (this.list.contains(value)) return;
                 // this.list.add(value); // Doesn't work for some reason
                 ArrayList<String> newList = new ArrayList<>(this.list);
                 newList.add(value);
                 this.setList(newList);
-                SimpleVeinminer.LOGGER.info(value);
+//                SimpleVeinminer.LOGGER.info(value);
                 syncConfig();
             }
 
