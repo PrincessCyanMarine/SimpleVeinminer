@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#minecraft:copper_ores"
+    "#minecraft:copper_ores",
+    "minecraft:raw_copper_block"
   ]
 }

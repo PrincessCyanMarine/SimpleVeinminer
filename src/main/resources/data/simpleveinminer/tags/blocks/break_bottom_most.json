@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:signs",
+    "#minecraft:banners",
+    "#minecraft:doors",
+    "minecraft:scaffolding",
+    "minecraft:sugar_cane",
+    "minecraft:kelp",
+    "minecraft:bamboo",
+    "minecraft:cactus",
+    "minecraft:chorus_plant",
+    "minecraft:big_dripleaf_stem",
+    "minecraft:tall_grass",
+    "minecraft:tall_seagrass"
+  ]
+}
