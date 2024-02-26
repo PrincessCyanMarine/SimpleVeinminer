@@ -8,9 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
+import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
@@ -19,6 +17,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -45,6 +44,7 @@ public abstract class BlockMixin {
         }
     }
 
+    @Unique
     private void veinMine(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         ItemStack hand = player.getMainHandStack();
         Item handItem = player.getMainHandStack().getItem();
@@ -55,7 +55,7 @@ public abstract class BlockMixin {
         // SimpleVeinminer.LOGGER.info(exhaustion.baseValue + " " + exhaustion.hardnessWeight);
         SimpleConfig.Durability durability = config.durability;
         double damageMultiplier = durability.damageMultiplier;
-        if (handItem instanceof SwordItem) damageMultiplier *= durability.swordMultiplier;
+        if (handItem instanceof SwordItem || handItem instanceof TridentItem) damageMultiplier *= durability.swordMultiplier;
         boolean debug = SimpleVeinminer.isDebug();
 
         ArrayList<BlockPos> blocksToBreak = SimpleVeinminer.getBlocksToVeinmine(pos, state, SimpleVeinminer.getMaxBlocks(handItem), SimpleVeinminer.getVeinminingRadius(player), SimpleVeinminer.getSpreadAccuracy(), player, debug, config.restrictions.onlyBreakBottomBlockForChainReactions);
@@ -76,19 +76,20 @@ public abstract class BlockMixin {
             boolean willDrop = shouldDrop(player, hand, currentState);
 
             List<ItemStack> stacks = getDroppedStacks(currentState, (ServerWorld) world, currentPos, currentBlockEntity, player, hand);
-            if (willDrop)
+            if (willDrop && stacks != null)
                 stacks.forEach((stack) -> {
                     if (SimpleVeinminer.getConfig().placeInInventory) player.getInventory().offerOrDrop(stack);
                     else dropStack(world, pos, stack);
                 });
             currentState.onStacksDropped((ServerWorld) world, currentPos, hand, willDrop);
             // currentBlock.dropStacks(currentState, world, pos, currentBlockEntity, player, hand);
-            player.incrementStat(Stats.MINED.getOrCreateStat(currentBlock));
-            if (willDrop && stacks.isEmpty() && currentState.isOf(Blocks.ICE) && !world.getBlockState(pos.down()).isAir())
+            if (willDrop && (stacks == null || stacks.isEmpty()) && currentState.isOf(Blocks.ICE) && !world.getBlockState(pos.down()).isAir())
                 world.setBlockState(currentPos, Blocks.WATER.getDefaultState());
             else world.removeBlock(currentPos, false);
 
-            boolean doDamage = shouldDamage(player, hand, currentBlock, durability);
+            player.incrementStat(Stats.MINED.getOrCreateStat(currentBlock));
+
+            boolean doDamage = i > 0 && shouldDamage(player, hand, currentBlock, durability);
 
             if (doDamage)
                 hand.damage((int) (damageMultiplier), player.getRandom(), (ServerPlayerEntity) player);
@@ -102,11 +103,19 @@ public abstract class BlockMixin {
         }
     }
 
+    @Unique
     public boolean shouldDrop(PlayerEntity player, ItemStack hand, BlockState state) {
         return !player.isCreative() && (!state.isToolRequired() || hand.isSuitableFor(state));
     }
 
+    @Unique
     public boolean shouldDamage(PlayerEntity player, ItemStack hand, Block block, SimpleConfig.Durability durability) {
-        return !player.isCreative() && hand.isDamageable() && (durability.consumeOnInstantBreak || block.getHardness() > 0);
+        Item handItem = hand.getItem();
+        return !player.isCreative() && hand.isDamageable() && (durability.consumeOnInstantBreak || block.getHardness() > 0) && (
+            handItem instanceof SwordItem ||
+            handItem instanceof TridentItem ||
+            handItem instanceof MiningToolItem ||
+            handItem instanceof ShearsItem
+        );
     }
 }
