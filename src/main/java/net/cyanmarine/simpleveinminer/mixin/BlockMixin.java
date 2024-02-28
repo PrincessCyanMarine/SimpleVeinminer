@@ -55,7 +55,7 @@ public abstract class BlockMixin {
         // SimpleVeinminer.LOGGER.info(exhaustion.baseValue + " " + exhaustion.hardnessWeight);
         SimpleConfig.Durability durability = config.durability;
         double damageMultiplier = durability.damageMultiplier;
-        if (isSpecialItem(handItem)) damageMultiplier *= durability.swordMultiplier;
+        if (isItemSpecial(handItem)) damageMultiplier *= durability.swordMultiplier;
         boolean debug = SimpleVeinminer.isDebug();
 
 
@@ -78,7 +78,7 @@ public abstract class BlockMixin {
 
             // Check if we can veinmine blocks
             boolean doDamage = shouldDamage(player, hand, currentBlock, durability);
-            SimpleVeinminer.LOGGER.info(hand.getDamage() + "/" + hand.getMaxDamage());
+//            SimpleVeinminer.LOGGER.info(hand.getDamage() + "/" + hand.getMaxDamage());
             if (doDamage && (hand.getDamage() >= maxAllowedDamage || (config.restrictions.keepToolFromBreaking && hand.getDamage() >= maxAllowedDamage - 1)))
                 break;
 
@@ -126,7 +126,7 @@ public abstract class BlockMixin {
     public boolean shouldDamage(PlayerEntity player, ItemStack hand, Block block, SimpleConfig.Durability durability) {
         Item handItem = hand.getItem();
         return !player.isCreative() && hand.isDamageable() && (durability.consumeOnInstantBreak || block.getHardness() > 0) && (
-                isSpecialItem(handItem) ||
+                isItemSpecial(handItem) ||
                         handItem instanceof MiningToolItem ||
                         handItem instanceof ShearsItem
         );
@@ -134,7 +134,7 @@ public abstract class BlockMixin {
 
     /** Compare item to the items that get damaged by 2 when breaking blocks**/
     @Unique
-    public boolean isSpecialItem(Item item){
+    public boolean isItemSpecial(Item item){
         return item instanceof SwordItem ||
                 item instanceof TridentItem;
     }
