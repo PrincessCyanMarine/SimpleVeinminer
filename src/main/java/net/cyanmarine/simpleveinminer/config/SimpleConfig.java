@@ -75,6 +75,7 @@ public class SimpleConfig extends Config implements ConfigContainer {
 
     @ConfigEntries(includeAll = true)
     public static class Limits implements ConfigGroup {
+        @ConfigEntry.BoundedInteger(min = 1)
         public int maxBlocks = 150;
         public boolean materialBasedLimits = false;
         @ConfigEntry.BoundedInteger(min = 1)
@@ -86,7 +87,7 @@ public class SimpleConfig extends Config implements ConfigContainer {
         }
 
         public void setMaxBlocks(int maxBlocks) {
-            this.maxBlocks = maxBlocks;
+            this.maxBlocks = Math.max(1, maxBlocks);
             syncConfig();
         }
 
@@ -96,8 +97,7 @@ public class SimpleConfig extends Config implements ConfigContainer {
         }
 
         public void setRadius(int radius) {
-            if (radius < 1) radius = 1;
-            this.radius = radius;
+            this.radius = Math.max(1, radius);
             syncConfig();
         }
 
@@ -228,8 +228,10 @@ public class SimpleConfig extends Config implements ConfigContainer {
     @ConfigEntries(includeAll = true)
     public static class Exhaustion implements ConfigGroup {
         public boolean exhaust = true;
+        @ConfigEntry.BoundedDouble(min = 0)
         public double baseValue = 0.3;
         public boolean exhaustionBasedOnHardness = true;
+        @ConfigEntry.BoundedDouble(min = 0)
         public double hardnessWeight = 0.1;
 
         public void setExhaust(boolean exhaust) {
@@ -238,7 +240,7 @@ public class SimpleConfig extends Config implements ConfigContainer {
         }
 
         public void setBaseValue(double baseValue) {
-            this.baseValue = baseValue;
+            this.baseValue = Math.max(0, baseValue);
             SimpleVeinminer.getConfig().save();
         }
 
@@ -248,24 +250,26 @@ public class SimpleConfig extends Config implements ConfigContainer {
         }
 
         public void setHardnessWeight(double hardnessWeight) {
-            this.hardnessWeight = hardnessWeight;
+            this.hardnessWeight = Math.max(0, hardnessWeight);
             SimpleVeinminer.getConfig().save();
         }
     }
 
     @ConfigEntries(includeAll = true)
     public static class Durability implements ConfigGroup {
+        @ConfigEntry.BoundedDouble(min = 0)
         public double damageMultiplier = 1.0;
+        @ConfigEntry.BoundedDouble(min = 0)
         public double swordMultiplier = 2.0;
         public boolean consumeOnInstantBreak = false;
 
         public void setDamageMultiplier(double damageMultiplier) {
-            this.damageMultiplier = damageMultiplier;
+            this.damageMultiplier = Math.max(0, damageMultiplier);
             SimpleVeinminer.getConfig().save();
         }
 
         public void setSwordMultiplier(double swordMultiplier) {
-            this.swordMultiplier = swordMultiplier;
+            this.swordMultiplier = Math.max(0, swordMultiplier);
             SimpleVeinminer.getConfig().save();
         }
 

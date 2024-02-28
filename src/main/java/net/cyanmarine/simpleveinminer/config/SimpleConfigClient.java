@@ -4,9 +4,11 @@ import me.lortseam.completeconfig.api.ConfigEntries;
 import me.lortseam.completeconfig.api.ConfigEntry;
 import me.lortseam.completeconfig.api.ConfigGroup;
 import me.shedaniel.math.Color;
+import net.minecraft.util.math.MathHelper;
 
 @ConfigEntries(includeAll = true)
 public class SimpleConfigClient extends SimpleConfig {
+    @ConfigEntry.BoundedInteger(min = 0)
     public int clientRadius = 1;
     public boolean showMiningProgress = true;
     public boolean showRestrictionMessages = true;
@@ -32,7 +34,7 @@ public class SimpleConfigClient extends SimpleConfig {
     }
 
     public void setClientRadius(int clientRadius) {
-        this.clientRadius = Math.min(5, Math.max(1, clientRadius));
+        this.clientRadius = MathHelper.clamp(clientRadius, 1, 5);
         this._save();
     }
 
