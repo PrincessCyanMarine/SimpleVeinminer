@@ -42,13 +42,16 @@ public abstract class InGameHudMixin {
         ItemStack stack = currentlyOutliningState.getBlock().asItem().getDefaultStack();
         boolean showBlock = hudDisplay.showBlock && !stack.isEmpty();
 
-        int count = blocksToHighlight.size();
+        String countStr = String.valueOf(blocksToHighlight.size());
+
+        // Frozen preview indicator position & text width of count
+        int frozX = 0, frozY = 0, countStrWidth = textRenderer.getWidth(countStr);
 
         int x = 0, y = 0;
         switch (hudDisplay.horizontal_anchor) {
             case CENTER -> x = client.getWindow().getScaledWidth() / 2 - 8;
             case RIGHT ->
-                x = client.getWindow().getScaledWidth() - ((showBlock ? 16 : 0) + (hudDisplay.showCount ? textRenderer.getWidth(String.valueOf(count)) + 6: 0));
+                x = client.getWindow().getScaledWidth() - ((showBlock ? 16 : 0) + (hudDisplay.showCount ? countStrWidth + 6: 0));
 
         }
         switch (hudDisplay.vertical_anchor) {
@@ -62,10 +65,25 @@ public abstract class InGameHudMixin {
 
         if (showBlock) {
             context.drawItem(stack, x, y);
+            x += hudDisplay.blockNumberSpacing;
         }
 
+        y += textRenderer.fontHeight / 2;
         if (hudDisplay.showCount) {
-            context.drawText(textRenderer, String.valueOf(count), x + 6 + (showBlock ? hudDisplay.blockNumberSpacing : 0), y + textRenderer.fontHeight / 2, 0xFFFFFF, true);
+            x += 6;
+            context.drawText(textRenderer, countStr, x, y, 0xFFFFFF, true);
+
+            frozX += countStrWidth;
+        }
+
+        frozX += x;
+        frozY += y;
+        if (previewFrozen) {
+            frozX += 4;
+            context.drawText(textRenderer, "<  >", frozX , frozY, 0xFFFFFF, true);
+
+            frozX += 5; // 9 for "<    >"
+            context.drawText(textRenderer, "❄", frozX , frozY, 0x7cfaff, true);
         }
     }
 }
