@@ -28,7 +28,8 @@ public abstract class InGameHudMixin {
     @Unique private final int HOTBAR_HEIGHT = 48;
     @Inject(at = @At("TAIL"), method = "render(Lnet/minecraft/client/gui/DrawContext;F)V")
     public void renderTailInject(DrawContext context, float tickDelta, CallbackInfo ci) {
-        if (blocksToHighlight == null) return;
+        boolean serverNOTSneaky = isVeinMiningServerSide && !clientPlayer.isSneaking();
+        if (blocksToHighlight == null || (!veinMineKeybind.isPressed() && serverNOTSneaky)) return;
         SimpleConfigClient.HudDisplay hudDisplay = getConfig().hudDisplay;
         if (!hudDisplay.showCount && !hudDisplay.showBlock) return;
         TextRenderer textRenderer = this.getTextRenderer();
