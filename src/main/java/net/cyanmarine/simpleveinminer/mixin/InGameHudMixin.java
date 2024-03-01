@@ -26,9 +26,14 @@ public abstract class InGameHudMixin {
     // Value to subtract when the vertical anchor is set to BOTTOM
     // TODO: Draw the block item before the chat box
     @Unique private final int HOTBAR_HEIGHT = 48;
+    // The only place where client.player can be null is in InGameHud.tick
+    // (called when the MinecraftClient just opens)
+    //
+    // Also, InGameHud.render() is called after ClientPlayConnectionEvents.JOIN event,
+    // so client.player will *never* be null here
     @Inject(at = @At("TAIL"), method = "render(Lnet/minecraft/client/gui/DrawContext;F)V")
     public void renderTailInject(DrawContext context, float tickDelta, CallbackInfo ci) {
-        boolean serverNOTSneaky = isVeinMiningServerSide && !clientPlayer.isSneaking();
+        boolean serverNOTSneaky = isVeinMiningServerSide && ! client.player.isSneaking();
         if (blocksToHighlight == null || (!veinMineKeybind.isPressed() && serverNOTSneaky)) return;
         SimpleConfigClient.HudDisplay hudDisplay = getConfig().hudDisplay;
         if (!hudDisplay.showCount && !hudDisplay.showBlock) return;

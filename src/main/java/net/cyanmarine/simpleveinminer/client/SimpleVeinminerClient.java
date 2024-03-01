@@ -13,7 +13,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.render.BufferBuilder;
@@ -39,7 +38,6 @@ public class SimpleVeinminerClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(SimpleVeinminer.MOD_ID + " - client");
     public static boolean isVeinMiningServerSide = false;
     public static AtomicBoolean isInstalledOnServerSide = new AtomicBoolean(false);
-    public static ClientPlayerEntity clientPlayer = null;
     static SimpleConfig.SimpleConfigCopy worldConfig;
     private static SimpleConfigClient config;
     public static KeyBinding veinMineKeybind = KeyBindingHelper.registerKeyBinding(new StickyKeyBinding("key.simpleveinminer.veinminingKey", GLFW.GLFW_KEY_GRAVE_ACCENT, "key.simpleveinminer.veinminerCategory", () -> config.keybindToggles));
@@ -186,17 +184,13 @@ public class SimpleVeinminerClient implements ClientModInitializer {
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             worldConfig = null;
-            clientPlayer = null;
             SimpleVeinminerClient.isInstalledOnServerSide.set(false);
         });
 
         ClientPlayConnectionEvents.INIT.register((handler, client) -> {
             worldConfig = null;
-            clientPlayer = null;
             SimpleVeinminerClient.isInstalledOnServerSide.set(false);
         });
-
-        ClientPlayConnectionEvents.JOIN.register(((handler, sender, client) -> clientPlayer = client.player));
 
         ClientPlayNetworking.registerGlobalReceiver(Constants.CONFIG_SYNC, (client, handler, buf, responseSender) -> {
             buf.retain();
