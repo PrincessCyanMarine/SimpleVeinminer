@@ -62,7 +62,11 @@ public class CommandRegister {
                                             context.getSource().sendMessage(Text.of("Veinmining \"spread\" set to " + spread));
                                             return 1;
                                         }))
-                                )
+                                ).executes(context -> {
+                                    int spread = SimpleVeinminer.getConfig().limits.radius;
+                                    context.getSource().sendMessage(Text.of("Veinmining \"spread\" is " + spread));
+                                    return 1;
+                                })
                             ).then(
                                     literal("materialBasedLimits").then(
                                             argument("value", BoolArgumentType.bool()).executes((context) -> {
@@ -178,13 +182,13 @@ public class CommandRegister {
                                     ).then(
                                             literal("clear").executes((context) -> {
                                                 SimpleVeinminer.getConfig().restrictions.restrictionList.setList(new ArrayList<>());
-                                                context.getSource().sendMessage(Text.of("Cleared list"));
+                                                context.getSource().sendMessage(Text.of("List cleared"));
                                                 return 1;
                                             })
                                     ).executes(context -> {
                                         List<String> list = SimpleVeinminer.getConfig().restrictions.restrictionList.list;
 
-                                        if (list.size() == 0) {
+                                        if (list.isEmpty()) {
                                             context.getSource().sendMessage(Text.of("List is empty"));
                                             context.getSource().sendMessage(Text.of("To add blocks, use \"/veinminer restrictions list add <id/tag>\""));
                                             context.getSource().sendMessage(Text.of("To remove blocks, use \"/veinminer restrictions list remove <id/tag>\""));
@@ -217,7 +221,7 @@ public class CommandRegister {
                                                         String newValue = StringArgumentType.getString(context, "value");
 //                                                        SimpleVeinminer.LOGGER.info("Adding " + newValue + " to list");
                                                         SimpleVeinminer.getConfig().restrictions.restrictionTags.add(newValue);
-                                                        context.getSource().sendMessage(Text.of("Added " + newValue + " to list"));
+                                                        context.getSource().sendMessage(Text.of("Added " + newValue + " to tags list"));
                                                         return 1;
                                                     })
                                             )
@@ -240,12 +244,12 @@ public class CommandRegister {
                                             })
                                     ).executes((context)->{
                                         List<String> list = SimpleVeinminer.getConfig().restrictions.restrictionTags.tags;
-                                        if (list.size() == 0) {
-                                            context.getSource().sendMessage(Text.of("List is empty"));
+                                        if (list.isEmpty()) {
+                                            context.getSource().sendMessage(Text.of("Tag list is empty"));
                                             context.getSource().sendMessage(Text.of("To add tags, use \"/veinminer restrictions tags add <tag>\""));
                                             return 1;
                                         } else {
-                                            context.getSource().sendMessage(Text.of("List:"));
+                                            context.getSource().sendMessage(Text.of("Tag list:"));
                                             list.forEach(s -> context.getSource().sendMessage(Text.of(s)));
                                         }
                                         return 1;
