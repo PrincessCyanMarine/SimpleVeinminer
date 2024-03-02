@@ -1,6 +1,7 @@
 package net.cyanmarine.simpleveinminer.mixin;
 
 import net.cyanmarine.simpleveinminer.config.SimpleConfigClient;
+import net.cyanmarine.simpleveinminer.config.enums.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -44,9 +45,9 @@ public abstract class InGameHudMixin {
             case CENTER -> y = client.getWindow().getScaledHeight() / 2 - 8;
             case BOTTOM -> y = client.getWindow().getScaledHeight()  - 16;
         }
-        if (hudDisplay.horizontal_anchor == SimpleConfigClient.HudDisplay.HORIZONTAL_ANCHOR.RIGHT) x -= hudDisplay.x;
+        if (hudDisplay.horizontal_anchor == HorizontalAnchor.RIGHT) x -= hudDisplay.x;
         else x += hudDisplay.x;
-        if (hudDisplay.vertical_anchor == SimpleConfigClient.HudDisplay.VERTICAL_ANCHOR.BOTTOM) y -= hudDisplay.y;
+        if (hudDisplay.vertical_anchor == VerticalAnchor.BOTTOM) y -= hudDisplay.y;
         else y += hudDisplay.y;
 
         if (showBlock) {

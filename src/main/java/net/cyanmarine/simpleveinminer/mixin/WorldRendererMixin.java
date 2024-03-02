@@ -131,9 +131,7 @@ public abstract class WorldRendererMixin {
                         drawBox(buffer, positionMatrix, red, green, blue, alpha, new Box(0, 0, 0, 1, 1, 1), highlight, blocksToHighlight, b);
                     case CUBE_SHAPE ->
                         drawBox(buffer, positionMatrix, red, green, blue, alpha, shape.getBoundingBox(), highlight, blocksToHighlight, b);
-                    case OUTLINE -> {
-                        drawOutline(buffer, positionMatrix, red, green, blue, alpha, shape, highlight, blocksToHighlight, b, matrices);
-                    }
+                    case OUTLINE -> drawOutline(buffer, positionMatrix, red, green, blue, alpha, shape, highlight, blocksToHighlight, b, matrices);
                 }
             }
 
@@ -222,8 +220,7 @@ public abstract class WorldRendererMixin {
                 if (beingBroken == null)
                     beingBroken = (ArrayList<BlockPos>) blocksToHighlight.clone();
 
-                for (int i = 0; i < blocksToHighlight.size(); i++) {
-                    BlockPos currentPos = blocksToHighlight.get(i);
+                for (BlockPos currentPos : blocksToHighlight) {
                     if (currentPos.equals(currentlyOutliningPos)) continue;
                     BlockBreakingInfo newBlockBreakingProgress = new BlockBreakingInfo(blockBreakingProgress.hashCode(), currentPos);
                     newBlockBreakingProgress.setStage(stage);
@@ -261,8 +258,7 @@ public abstract class WorldRendererMixin {
     @Unique
     private void clearBlockBreakingProgressions() {
         if (beingBroken != null && blockBreakingProgressions != null)
-            for (int i = 0; i < beingBroken.size(); i++) {
-                BlockPos pos = beingBroken.get(i);
+            for (BlockPos pos : beingBroken) {
                 if (pos.equals(currentlyOutliningPos)) continue;
                 long l = pos.asLong();
                 SortedSet<BlockBreakingInfo> set = this.blockBreakingProgressions.get(l);
@@ -280,8 +276,7 @@ public abstract class WorldRendererMixin {
         if (!onlyExposed) return willVeinmine;
         ArrayList<BlockPos> willOutline = new ArrayList<>();
 
-        for (int i = 0; i < willVeinmine.size(); i++) {
-            BlockPos currentPos = willVeinmine.get(i);
+        for (BlockPos currentPos : willVeinmine) {
             if (hasFaceVisible(currentPos)) willOutline.add(currentPos);
         }
 
