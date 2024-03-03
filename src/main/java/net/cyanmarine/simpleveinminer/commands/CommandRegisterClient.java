@@ -29,7 +29,11 @@ public class CommandRegisterClient {
                                                                 context.getSource().getPlayer().sendMessage(Text.of("Hud X position set to " + x));
                                                                 return 1;
                                                             })
-                                            )
+                                            ).executes(context -> {
+                                                int x = SimpleVeinminerClient.getConfig().hudDisplay.x;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Hud position X is " + x));
+                                                return 1;
+                                            })
                                     ).then(
                                             literal("y").then(
                                                     argument("value", IntegerArgumentType.integer())
@@ -39,7 +43,11 @@ public class CommandRegisterClient {
                                                                 context.getSource().getPlayer().sendMessage(Text.of("Hud Y position set to " + y));
                                                                 return 1;
                                                             })
-                                            )
+                                            ).executes(context -> {
+                                                int y = SimpleVeinminerClient.getConfig().hudDisplay.y;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Hud position Y is " + y));
+                                                return 1;
+                                            })
                                     ).executes((context) -> {
                                         int x = SimpleVeinminerClient.getConfig().hudDisplay.x;
                                         int y = SimpleVeinminerClient.getConfig().hudDisplay.y;
