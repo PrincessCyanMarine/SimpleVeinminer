@@ -141,6 +141,7 @@ public class SimpleConfigClient extends SimpleConfig {
         public MODES mode = MODES.OUTLINE;
         public boolean highlightAllSides = false;
         // public boolean onlyExposed = false;
+        @ConfigEntry.BoundedInteger(min = 0)
         public int updateRate = 20;
 
 
@@ -160,6 +161,7 @@ public class SimpleConfigClient extends SimpleConfig {
         public int x = 16;
         public int y = 0;
         public boolean showBlock = true;
+        @ConfigEntry.BoundedInteger(min = 0)
         public int blockNumberSpacing = 16;
     }
 }
