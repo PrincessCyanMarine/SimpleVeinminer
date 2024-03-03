@@ -55,26 +55,43 @@ public abstract class BlockMixin {
         // SimpleVeinminer.LOGGER.info(exhaustion.baseValue + " " + exhaustion.hardnessWeight);
         SimpleConfig.Durability durability = config.durability;
         double damageMultiplier = durability.damageMultiplier;
-        if (handItem instanceof SwordItem || handItem instanceof TridentItem) damageMultiplier *= durability.swordMultiplier;
+        if (isItemSpecial(handItem)) damageMultiplier *= durability.swordMultiplier;
         boolean debug = SimpleVeinminer.isDebug();
+
+
+        /* Damage limit while veinmining
+        Keep in mind that the damage of the first block is calculated *after* breaking every other block.
+        The damage dealt by Block 0 is the default vanilla value (1 for items & 2 for sword/tridents).
+
+        Meaning of maxAllowedDamage's value: We should veinmine while the durability is greater than damageMultiplier
+        (and so the durability for breaking Block 0 is at least 1 when we finish veinmining)
+        */
+        int maxAllowedDamage = hand.getMaxDamage() - (int) damageMultiplier;
 
         ArrayList<BlockPos> blocksToBreak = SimpleVeinminer.getBlocksToVeinmine(pos, state, SimpleVeinminer.getMaxBlocks(handItem), SimpleVeinminer.getVeinminingRadius(player), SimpleVeinminer.getSpreadAccuracy(), player, debug, config.restrictions.onlyBreakBottomBlockForChainReactions);
         if (debug) world.setBlockState(pos, Blocks.BEDROCK.getDefaultState());
-        for (int i = 0; i < blocksToBreak.size(); i++) {
-            BlockPos currentPos = blocksToBreak.get(i);
+
+        // Skip Block 0 as the player breaks this block directly
+        for (BlockPos currentPos : blocksToBreak.subList(1, blocksToBreak.size())) {
+            BlockState currentState = world.getBlockState(currentPos);
+            Block currentBlock = currentState.getBlock();
+
+            // Check if we can veinmine blocks
+            boolean doDamage = shouldDamage(player, hand, currentBlock, durability);
+//            SimpleVeinminer.LOGGER.info(hand.getDamage() + "/" + hand.getMaxDamage());
+            if (doDamage && (hand.getDamage() >= maxAllowedDamage || (config.restrictions.keepToolFromBreaking && hand.getDamage() >= maxAllowedDamage - 1)))
+                break;
+
+            // Do veinmining
+            if (currentState.isAir()) continue;
             if (debug) {
                 world.setBlockState(currentPos, Blocks.BEDROCK.getDefaultState());
                 continue;
             }
-
-            BlockState currentState = world.getBlockState(currentPos);
-            if (currentState.isAir()) continue;
-            Block currentBlock = currentState.getBlock();
             BlockEntity currentBlockEntity = world.getBlockEntity(currentPos);
             //world.breakBlock(currentPos, false);
 
             boolean willDrop = shouldDrop(player, hand, currentState);
-
             List<ItemStack> stacks = getDroppedStacks(currentState, (ServerWorld) world, currentPos, currentBlockEntity, player, hand);
             if (willDrop && stacks != null)
                 stacks.forEach((stack) -> {
@@ -89,7 +106,6 @@ public abstract class BlockMixin {
 
             player.incrementStat(Stats.MINED.getOrCreateStat(currentBlock));
 
-            boolean doDamage = i > 0 && shouldDamage(player, hand, currentBlock, durability);
 
             if (doDamage)
                 hand.damage((int) (damageMultiplier), player.getRandom(), (ServerPlayerEntity) player);
@@ -98,8 +114,6 @@ public abstract class BlockMixin {
                 double totalExhausted = (exhaustion.baseValue + (exhaustion.exhaustionBasedOnHardness ? (currentBlock.getHardness() * exhaustion.hardnessWeight) : 0));
                 player.addExhaustion((float) totalExhausted);
             }
-//            SimpleVeinminer.LOGGER.info(hand.getDamage() + "/" + hand.getMaxDamage());
-            if (doDamage && (hand.getDamage() >= hand.getMaxDamage() || (config.restrictions.keepToolFromBreaking && hand.getDamage() >= hand.getMaxDamage() - 2))) break;
         }
     }
 
@@ -112,10 +126,16 @@ public abstract class BlockMixin {
     public boolean shouldDamage(PlayerEntity player, ItemStack hand, Block block, SimpleConfig.Durability durability) {
         Item handItem = hand.getItem();
         return !player.isCreative() && hand.isDamageable() && (durability.consumeOnInstantBreak || block.getHardness() > 0) && (
-            handItem instanceof SwordItem ||
-            handItem instanceof TridentItem ||
-            handItem instanceof MiningToolItem ||
-            handItem instanceof ShearsItem
+                isItemSpecial(handItem) ||
+                        handItem instanceof MiningToolItem ||
+                        handItem instanceof ShearsItem
         );
+    }
+
+    /** Compare item to the items that get damaged by 2 when breaking blocks**/
+    @Unique
+    public boolean isItemSpecial(Item item){
+        return item instanceof SwordItem ||
+                item instanceof TridentItem;
     }
 }
