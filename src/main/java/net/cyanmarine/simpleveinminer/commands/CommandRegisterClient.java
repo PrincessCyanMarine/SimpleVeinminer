@@ -121,7 +121,7 @@ public class CommandRegisterClient {
                                     )
                             ).then(
                                     literal("spacing").then(
-                                            argument("value", IntegerArgumentType.integer())
+                                            argument("value", IntegerArgumentType.integer(0))
                                                     .executes((context) -> {
                                                         int spacing = IntegerArgumentType.getInteger(context, "value");
                                                         SimpleVeinminerClient.getConfig().setHudBlockNumberSpacing(spacing);
@@ -154,7 +154,7 @@ public class CommandRegisterClient {
                                     ).then(
                                             literal("opacity")
                                                     .then(
-                                                            argument("value", IntegerArgumentType.integer(1, 100))
+                                                            argument("value", IntegerArgumentType.integer(0, 100))
                                                                     .executes((context) -> {
                                                                         int opacity = IntegerArgumentType.getInteger(context, "value");
                                                                         SimpleVeinminerClient.getConfig().setOpacity(opacity);
