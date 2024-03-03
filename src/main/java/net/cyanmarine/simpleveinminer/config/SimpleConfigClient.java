@@ -107,6 +107,10 @@ public class SimpleConfigClient extends SimpleConfig {
         this.hudDisplay.horizontal_anchor = horizontal_anchor;
         this._save();
     }
+    public void setHudSnowflakeAnchor(SnowflakeAnchor snowflake_anchor) {
+        this.hudDisplay.snowflake_anchor = snowflake_anchor;
+        this._save();
+    }
     public void setHudBlockNumberSpacing(int blockNumberSpacing) {
         this.hudDisplay.blockNumberSpacing = blockNumberSpacing;
         this._save();
@@ -158,6 +162,7 @@ public class SimpleConfigClient extends SimpleConfig {
         public boolean showCount = true;
         public VerticalAnchor vertical_anchor = VerticalAnchor.CENTER;
         public HorizontalAnchor horizontal_anchor = HorizontalAnchor.CENTER;
+        public SnowflakeAnchor snowflake_anchor = SnowflakeAnchor.RIGHT;
         public int x = 16;
         public int y = 0;
         public boolean showBlock = true;

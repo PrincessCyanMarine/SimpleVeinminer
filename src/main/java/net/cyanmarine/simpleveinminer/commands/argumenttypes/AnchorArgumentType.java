@@ -14,6 +14,11 @@ public class AnchorArgumentType {
         return context.getArgument(id, HorizontalAnchor.class);
     }
 
+    public static SnowflakeAnchorArgumentType snowflakeAnchor() { return new SnowflakeAnchorArgumentType(); }
+    public static <S> SnowflakeAnchor getSnowflakeAnchor(CommandContext<S> context, String id){
+        return context.getArgument(id, SnowflakeAnchor.class);
+    }
+
     public static class VerticalAnchorArgumentType extends EnumArgumentType<VerticalAnchor>
     {
         private VerticalAnchorArgumentType() {
@@ -24,6 +29,12 @@ public class AnchorArgumentType {
     {
         private HorizontalAnchorArgumentType() {
             super(HorizontalAnchor.CODEC, HorizontalAnchor::values);
+        }
+    }
+    public static class SnowflakeAnchorArgumentType extends EnumArgumentType<SnowflakeAnchor>
+    {
+        private SnowflakeAnchorArgumentType() {
+            super(SnowflakeAnchor.CODEC, SnowflakeAnchor::values);
         }
     }
 }

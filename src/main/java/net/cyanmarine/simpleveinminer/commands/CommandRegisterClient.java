@@ -83,12 +83,28 @@ public class CommandRegisterClient {
                                                 context.getSource().getPlayer().sendMessage(Text.of("Hud horizontal anchor is set to " + anchor.asString()));
                                                 return  1;
                                             })
+                                    ).then(
+                                            literal("snowflake").then(
+                                                    argument("value", AnchorArgumentType.snowflakeAnchor())
+                                                            .executes(context -> {
+                                                                SnowflakeAnchor anchor = AnchorArgumentType.getSnowflakeAnchor(context, "value");
+                                                                SimpleVeinminerClient.getConfig().setHudSnowflakeAnchor(anchor);
+                                                                context.getSource().getPlayer().sendMessage(Text.of("Hud snowflake anchor set to " + anchor.asString()));
+                                                                return 1;
+                                                            })
+                                            ).executes(context -> {
+                                                SnowflakeAnchor anchor = SimpleVeinminerClient.getConfig().hudDisplay.snowflake_anchor;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Hud snowflake anchor is set to " + anchor.asString()));
+                                                return  1;
+                                            })
                                     ).executes(context -> {
                                         VerticalAnchor vAnchor = SimpleVeinminerClient.getConfig().hudDisplay.vertical_anchor;
                                         HorizontalAnchor hAnchor = SimpleVeinminerClient.getConfig().hudDisplay.horizontal_anchor;
+                                        SnowflakeAnchor sAnchor = SimpleVeinminerClient.getConfig().hudDisplay.snowflake_anchor;
                                         context.getSource().getPlayer().sendMessage(Text.of("Hud anchors' values are:"));
                                         context.getSource().getPlayer().sendMessage(Text.of("    Vertical is set to " + vAnchor.asString()));
                                         context.getSource().getPlayer().sendMessage(Text.of("    Horizontal is set to " + hAnchor.asString()));
+                                        context.getSource().getPlayer().sendMessage(Text.of("    Snowflake is set to " + sAnchor.asString()));
                                         return 1;
                                     })
                             ).then(
