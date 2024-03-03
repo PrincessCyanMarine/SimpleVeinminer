@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,6 +23,9 @@ public abstract class InGameHudMixin {
 
     @Shadow @Final private MinecraftClient client;
 
+    // Value to subtract when the vertical anchor is set to BOTTOM
+    // TODO: Draw the block item before the chat box
+    @Unique private final int HOTBAR_HEIGHT = 48;
     @Inject(at = @At("TAIL"), method = "render(Lnet/minecraft/client/gui/DrawContext;F)V")
     public void renderTailInject(DrawContext context, float tickDelta, CallbackInfo ci) {
         if (blocksToHighlight == null) return;
@@ -43,7 +47,7 @@ public abstract class InGameHudMixin {
         }
         switch (hudDisplay.vertical_anchor) {
             case CENTER -> y = client.getWindow().getScaledHeight() / 2 - 8;
-            case BOTTOM -> y = client.getWindow().getScaledHeight()  - 16;
+            case BOTTOM -> y = client.getWindow().getScaledHeight()  - 16 - HOTBAR_HEIGHT;
         }
         if (hudDisplay.horizontal_anchor == HorizontalAnchor.RIGHT) x -= hudDisplay.x;
         else x += hudDisplay.x;
