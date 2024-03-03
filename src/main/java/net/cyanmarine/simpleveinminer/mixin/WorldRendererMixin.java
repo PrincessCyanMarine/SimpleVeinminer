@@ -44,12 +44,19 @@ import static net.cyanmarine.simpleveinminer.client.SimpleVeinminerClient.*;
 
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererMixin {
+    @Unique
     Item holding;
+    @Unique
     BlockPos currentlyOutliningPos;
+    @Unique
     ArrayList<BlockPos> beingBroken;
+    @Unique
     float red, green, blue, alpha;
+    @Unique
     int delay1 = 0;
+    @Unique
     int delay2 = 0;
+    @Unique
     boolean resetCountdown = false;
     @Shadow
     @Nullable
@@ -68,6 +75,7 @@ public abstract class WorldRendererMixin {
     @Shadow
     protected abstract void removeBlockBreakingInfo(BlockBreakingInfo info);
 
+    @Unique
     private void renderPreview(PlayerEntity player, MatrixStack matrices) {
             assert world != null;
             assert blocksToHighlight != null;
@@ -123,9 +131,7 @@ public abstract class WorldRendererMixin {
                         drawBox(buffer, positionMatrix, red, green, blue, alpha, new Box(0, 0, 0, 1, 1, 1), highlight, blocksToHighlight, b);
                     case CUBE_SHAPE ->
                         drawBox(buffer, positionMatrix, red, green, blue, alpha, shape.getBoundingBox(), highlight, blocksToHighlight, b);
-                    case OUTLINE -> {
-                        drawOutline(buffer, positionMatrix, red, green, blue, alpha, shape, highlight, blocksToHighlight, b, matrices);
-                    }
+                    case OUTLINE -> drawOutline(buffer, positionMatrix, red, green, blue, alpha, shape, highlight, blocksToHighlight, b, matrices);
                 }
             }
 
@@ -152,7 +158,7 @@ public abstract class WorldRendererMixin {
                 assert client.player != null;
                 Item hand = client.player.getMainHandStack().getItem();
 
-                if (!previewFrozen && (config.isChanged() || (updateRate > 0 && delay1 % updateRate == 0) || !pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState) || !hand.equals(holding))) {
+                if (blocksToHighlight == null || (!previewFrozen && (config.isChanged() || (updateRate > 0 && delay1 % updateRate == 0) || !pos.equals(currentlyOutliningPos) || !state.equals(currentlyOutliningState) || !hand.equals(holding)))) {
                     reset();
                     holding = hand;
                     Color outlineColor = outline.color;
@@ -214,8 +220,7 @@ public abstract class WorldRendererMixin {
                 if (beingBroken == null)
                     beingBroken = (ArrayList<BlockPos>) blocksToHighlight.clone();
 
-                for (int i = 0; i < blocksToHighlight.size(); i++) {
-                    BlockPos currentPos = blocksToHighlight.get(i);
+                for (BlockPos currentPos : blocksToHighlight) {
                     if (currentPos.equals(currentlyOutliningPos)) continue;
                     BlockBreakingInfo newBlockBreakingProgress = new BlockBreakingInfo(blockBreakingProgress.hashCode(), currentPos);
                     newBlockBreakingProgress.setStage(stage);
@@ -250,10 +255,10 @@ public abstract class WorldRendererMixin {
         }
     }
 
+    @Unique
     private void clearBlockBreakingProgressions() {
         if (beingBroken != null && blockBreakingProgressions != null)
-            for (int i = 0; i < beingBroken.size(); i++) {
-                BlockPos pos = beingBroken.get(i);
+            for (BlockPos pos : beingBroken) {
                 if (pos.equals(currentlyOutliningPos)) continue;
                 long l = pos.asLong();
                 SortedSet<BlockBreakingInfo> set = this.blockBreakingProgressions.get(l);
@@ -265,19 +270,20 @@ public abstract class WorldRendererMixin {
         beingBroken = null;
     }
 
+    @Unique
     private ArrayList<BlockPos> getBlocksToOutline(BlockPos pos, BlockState state, PlayerEntity player, boolean onlyExposed) {
         ArrayList<BlockPos> willVeinmine = SimpleVeinminer.getBlocksToVeinmine(pos, state, SimpleVeinminer.getMaxBlocks(holding), SimpleVeinminer.getVeinminingRadius(player), SimpleVeinminer.getSpreadAccuracy(), player, SimpleVeinminer.isDebug(), getConfig().restrictions.onlyBreakBottomBlockForChainReactions);
         if (!onlyExposed) return willVeinmine;
         ArrayList<BlockPos> willOutline = new ArrayList<>();
 
-        for (int i = 0; i < willVeinmine.size(); i++) {
-            BlockPos currentPos = willVeinmine.get(i);
+        for (BlockPos currentPos : willVeinmine) {
             if (hasFaceVisible(currentPos)) willOutline.add(currentPos);
         }
 
         return willOutline;
     }
 
+    @Unique
     private boolean hasFaceVisible(BlockPos pos) {
         if (world == null) return false;
         BlockPos[] neighbors = SimpleVeinminer.getNeighbors(pos);
@@ -286,6 +292,7 @@ public abstract class WorldRendererMixin {
         return false;
     }
 
+    @Unique
     private void outline(MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos pos, BlockState state, float r, float g, float b, float a) {
         drawCuboidShapeOutline(matrices, vertexConsumer, state.getOutlineShape(world, pos, ShapeContext.of(entity)), (double) pos.getX() - d, (double) pos.getY() - e, (double) pos.getZ() - f, r, g, b, a);
     }

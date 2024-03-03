@@ -205,9 +205,7 @@ public class SimpleVeinminerClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(Constants.SERVERSIDE_UPDATE, (client, handler, buf, responseSender) -> {
             boolean newValue = buf.readBoolean();
 
-            client.execute(() -> {
-                isVeinMiningServerSide = newValue;
-            });
+            client.execute(() -> isVeinMiningServerSide = newValue);
         });
 
         LOGGER.info("Simple VeinMiner initialized");

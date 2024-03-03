@@ -68,7 +68,7 @@ public class SimpleVeinminer implements ModInitializer {
         return new Identifier(MOD_ID, name);
     }
 
-    private static BlockState[] STATES = {
+    private static final BlockState[] STATES = {
             Blocks.RED_STAINED_GLASS.getDefaultState(),
             Blocks.ORANGE_STAINED_GLASS.getDefaultState(),
             Blocks.YELLOW_STAINED_GLASS.getDefaultState(),
@@ -152,16 +152,14 @@ public class SimpleVeinminer implements ModInitializer {
                 // LOGGER.info("Crawling through depth " + d);
                 ArrayList<ArrayList<BlockPos>> _crawlers = crawlers.get(d);
                 ArrayList<ArrayList<BlockPos>> next = new ArrayList<>();
-                for (int j = 0; j < _crawlers.size(); j++) {
-                    ArrayList<BlockPos> crawler = _crawlers.get(j);
-                    for (int i = 0; i < crawler.size(); i++) {
+                for (ArrayList<BlockPos> crawler : _crawlers) {
+                    for (BlockPos pos : crawler) {
                         t++;
-                        BlockPos pos = crawler.get(i);
                         ArrayList<BlockPos> newCrawler = (testAroundBlock(blocksTested, blocksToBreak, maxBlocks, world, compareTo, radius, pos, 1 + d, debug, tagList, chainReactions, player, restrictions));
 
-                        if (d < radius - 2 && newCrawler.size() > 0) {
+                        if (d < radius - 2 && !newCrawler.isEmpty()) {
                             ///LOGGER.info("New crawler size (pre filter): " + newCrawler.size());
-                            ArrayList<BlockPos> filteredCrawler = new ArrayList<BlockPos>();
+                            ArrayList<BlockPos> filteredCrawler = new ArrayList<>();
                             for (BlockPos newCrawlerPos : newCrawler) {
                                 if (blocksToCrawl.contains(newCrawlerPos)) continue;
                                 filteredCrawler.add(newCrawlerPos);

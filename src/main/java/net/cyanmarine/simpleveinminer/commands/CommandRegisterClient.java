@@ -2,30 +2,19 @@ package net.cyanmarine.simpleveinminer.commands;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import me.shedaniel.math.Color;
 import net.cyanmarine.simpleveinminer.client.SimpleVeinminerClient;
+import net.cyanmarine.simpleveinminer.commands.argumenttypes.AnchorArgumentType;
 import net.cyanmarine.simpleveinminer.commands.argumenttypes.HighlightModesArgumentType;
 import net.cyanmarine.simpleveinminer.config.SimpleConfigClient;
+import net.cyanmarine.simpleveinminer.config.enums.*;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class CommandRegisterClient {
-    private int setVerticalAnchor(CommandContext<FabricClientCommandSource> context, SimpleConfigClient.HudDisplay.VERTICAL_ANCHOR anchor) {
-        SimpleVeinminerClient.getConfig().setHudVerticalAnchor(anchor);
-        context.getSource().getPlayer().sendMessage(Text.of("Hud vertical anchor set to top"));
-        return 1;
-    }
-    private int setHorizontalAnchor(CommandContext<FabricClientCommandSource> context, SimpleConfigClient.HudDisplay.HORIZONTAL_ANCHOR anchor) {
-        SimpleVeinminerClient.getConfig().setHudHorizontalAnchor(anchor);
-        context.getSource().getPlayer().sendMessage(Text.of("Hud horizontal anchor set to top"));
-        return 1;
-    }
-
     public CommandRegisterClient() {
         SimpleVeinminerClient.LOGGER.info("Initializing client commands");
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
@@ -37,20 +26,28 @@ public class CommandRegisterClient {
                                                             .executes((context) -> {
                                                                 int x = IntegerArgumentType.getInteger(context, "value");
                                                                 SimpleVeinminerClient.getConfig().setHudX(x);
-                                                                context.getSource().getPlayer().sendMessage(Text.of("Hud x position set to " + x));
+                                                                context.getSource().getPlayer().sendMessage(Text.of("Hud X position set to " + x));
                                                                 return 1;
                                                             })
-                                            )
+                                            ).executes(context -> {
+                                                int x = SimpleVeinminerClient.getConfig().hudDisplay.x;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Hud position X is " + x));
+                                                return 1;
+                                            })
                                     ).then(
                                             literal("y").then(
                                                     argument("value", IntegerArgumentType.integer())
                                                             .executes((context) -> {
                                                                 int y = IntegerArgumentType.getInteger(context, "value");
                                                                 SimpleVeinminerClient.getConfig().setHudY(y);
-                                                                context.getSource().getPlayer().sendMessage(Text.of("Hud y position set to " + y));
+                                                                context.getSource().getPlayer().sendMessage(Text.of("Hud Y position set to " + y));
                                                                 return 1;
                                                             })
-                                            )
+                                            ).executes(context -> {
+                                                int y = SimpleVeinminerClient.getConfig().hudDisplay.y;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Hud position Y is " + y));
+                                                return 1;
+                                            })
                                     ).executes((context) -> {
                                         int x = SimpleVeinminerClient.getConfig().hudDisplay.x;
                                         int y = SimpleVeinminerClient.getConfig().hudDisplay.y;
@@ -60,21 +57,56 @@ public class CommandRegisterClient {
                             ).then(
                                     literal("anchor").then(
                                             literal("vertical").then(
-                                                    literal("top").executes((context) -> setVerticalAnchor(context, SimpleConfigClient.HudDisplay.VERTICAL_ANCHOR.TOP))
-                                            ).then(
-                                                    literal("center").executes((context) -> setVerticalAnchor(context, SimpleConfigClient.HudDisplay.VERTICAL_ANCHOR.CENTER))
-                                            ).then(
-                                                    literal("bottom").executes((context) -> setVerticalAnchor(context, SimpleConfigClient.HudDisplay.VERTICAL_ANCHOR.BOTTOM))
-                                            )
+                                                      argument("value", AnchorArgumentType.verticalAnchor())
+                                                              .executes(context -> {
+                                                                  VerticalAnchor anchor = AnchorArgumentType.getVerticalAnchor(context, "value");
+                                                                  SimpleVeinminerClient.getConfig().setHudVerticalAnchor(anchor);
+                                                                  context.getSource().getPlayer().sendMessage(Text.of("Hud vertical anchor set to " + anchor.asString()));
+                                                                  return 1;
+                                                              })
+                                            ).executes(context -> {
+                                                VerticalAnchor anchor = SimpleVeinminerClient.getConfig().hudDisplay.vertical_anchor;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Hud vertical anchor is set to " + anchor.asString()));
+                                                return  1;
+                                            })
                                     ).then(
                                             literal("horizontal").then(
-                                                    literal("left").executes((context) -> setHorizontalAnchor(context, SimpleConfigClient.HudDisplay.HORIZONTAL_ANCHOR.LEFT))
-                                            ).then(
-                                                    literal("center").executes((context) -> setHorizontalAnchor(context, SimpleConfigClient.HudDisplay.HORIZONTAL_ANCHOR.CENTER))
-                                            ).then(
-                                                    literal("right").executes((context) -> setHorizontalAnchor(context, SimpleConfigClient.HudDisplay.HORIZONTAL_ANCHOR.RIGHT))
-                                            )
-                                    )
+                                                    argument("value", AnchorArgumentType.horizontalAnchor())
+                                                            .executes(context -> {
+                                                                HorizontalAnchor anchor = AnchorArgumentType.getHorizontalAnchor(context, "value");
+                                                                SimpleVeinminerClient.getConfig().setHudHorizontalAnchor(anchor);
+                                                                context.getSource().getPlayer().sendMessage(Text.of("Hud horizontal anchor set to " + anchor.asString()));
+                                                                return 1;
+                                                            })
+                                            ).executes(context -> {
+                                                HorizontalAnchor anchor = SimpleVeinminerClient.getConfig().hudDisplay.horizontal_anchor;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Hud horizontal anchor is set to " + anchor.asString()));
+                                                return  1;
+                                            })
+                                    ).then(
+                                            literal("snowflake").then(
+                                                    argument("value", AnchorArgumentType.snowflakeAnchor())
+                                                            .executes(context -> {
+                                                                SnowflakeAnchor anchor = AnchorArgumentType.getSnowflakeAnchor(context, "value");
+                                                                SimpleVeinminerClient.getConfig().setHudSnowflakeAnchor(anchor);
+                                                                context.getSource().getPlayer().sendMessage(Text.of("Hud snowflake anchor set to " + anchor.asString()));
+                                                                return 1;
+                                                            })
+                                            ).executes(context -> {
+                                                SnowflakeAnchor anchor = SimpleVeinminerClient.getConfig().hudDisplay.snowflake_anchor;
+                                                context.getSource().getPlayer().sendMessage(Text.of("Hud snowflake anchor is set to " + anchor.asString()));
+                                                return  1;
+                                            })
+                                    ).executes(context -> {
+                                        VerticalAnchor vAnchor = SimpleVeinminerClient.getConfig().hudDisplay.vertical_anchor;
+                                        HorizontalAnchor hAnchor = SimpleVeinminerClient.getConfig().hudDisplay.horizontal_anchor;
+                                        SnowflakeAnchor sAnchor = SimpleVeinminerClient.getConfig().hudDisplay.snowflake_anchor;
+                                        context.getSource().getPlayer().sendMessage(Text.of("Hud anchors' values are:"));
+                                        context.getSource().getPlayer().sendMessage(Text.of("    Vertical is set to " + vAnchor.asString()));
+                                        context.getSource().getPlayer().sendMessage(Text.of("    Horizontal is set to " + hAnchor.asString()));
+                                        context.getSource().getPlayer().sendMessage(Text.of("    Snowflake is set to " + sAnchor.asString()));
+                                        return 1;
+                                    })
                             ).then(
                                     literal("show").then(
                                             literal("block").then(
@@ -105,7 +137,7 @@ public class CommandRegisterClient {
                                     )
                             ).then(
                                     literal("spacing").then(
-                                            argument("value", IntegerArgumentType.integer())
+                                            argument("value", IntegerArgumentType.integer(0))
                                                     .executes((context) -> {
                                                         int spacing = IntegerArgumentType.getInteger(context, "value");
                                                         SimpleVeinminerClient.getConfig().setHudBlockNumberSpacing(spacing);
@@ -138,7 +170,7 @@ public class CommandRegisterClient {
                                     ).then(
                                             literal("opacity")
                                                     .then(
-                                                            argument("value", IntegerArgumentType.integer(1, 10000))
+                                                            argument("value", IntegerArgumentType.integer(0, 100))
                                                                     .executes((context) -> {
                                                                         int opacity = IntegerArgumentType.getInteger(context, "value");
                                                                         SimpleVeinminerClient.getConfig().setOpacity(opacity);

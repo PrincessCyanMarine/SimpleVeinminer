@@ -4,9 +4,12 @@ import me.lortseam.completeconfig.api.ConfigEntries;
 import me.lortseam.completeconfig.api.ConfigEntry;
 import me.lortseam.completeconfig.api.ConfigGroup;
 import me.shedaniel.math.Color;
+import net.cyanmarine.simpleveinminer.config.enums.*;
+import net.minecraft.util.math.MathHelper;
 
 @ConfigEntries(includeAll = true)
 public class SimpleConfigClient extends SimpleConfig {
+    @ConfigEntry.BoundedInteger(min = 0)
     public int clientRadius = 1;
     public boolean showMiningProgress = true;
     public boolean showRestrictionMessages = true;
@@ -32,7 +35,7 @@ public class SimpleConfigClient extends SimpleConfig {
     }
 
     public void setClientRadius(int clientRadius) {
-        this.clientRadius = Math.min(5, Math.max(1, clientRadius));
+        this.clientRadius = MathHelper.clamp(clientRadius, 1, 5);
         this._save();
     }
 
@@ -96,12 +99,16 @@ public class SimpleConfigClient extends SimpleConfig {
         this.hudDisplay.y = y;
         this._save();
     }
-    public void setHudVerticalAnchor(HudDisplay.VERTICAL_ANCHOR vertical_anchor) {
+    public void setHudVerticalAnchor(VerticalAnchor vertical_anchor) {
         this.hudDisplay.vertical_anchor = vertical_anchor;
         this._save();
     }
-    public void setHudHorizontalAnchor(HudDisplay.HORIZONTAL_ANCHOR horizontal_anchor) {
+    public void setHudHorizontalAnchor(HorizontalAnchor horizontal_anchor) {
         this.hudDisplay.horizontal_anchor = horizontal_anchor;
+        this._save();
+    }
+    public void setHudSnowflakeAnchor(SnowflakeAnchor snowflake_anchor) {
+        this.hudDisplay.snowflake_anchor = snowflake_anchor;
         this._save();
     }
     public void setHudBlockNumberSpacing(int blockNumberSpacing) {
@@ -130,7 +137,7 @@ public class SimpleConfigClient extends SimpleConfig {
     public static class Highlight implements ConfigGroup {
         public boolean doHighlight = true;
         @ConfigEntry.Color(alphaMode = false)
-        public Color color = Color.ofOpaque(0xFFFFFF);
+        public Color color = Color.ofTransparent(0xFFFFFF);
         @ConfigEntry.Slider(valueKey = "opacity.value")
         @ConfigEntry.IntegerSliderInterval(1)
         @ConfigEntry.BoundedInteger(min = 0, max = 100)
@@ -138,6 +145,7 @@ public class SimpleConfigClient extends SimpleConfig {
         public MODES mode = MODES.OUTLINE;
         public boolean highlightAllSides = false;
         // public boolean onlyExposed = false;
+        @ConfigEntry.BoundedInteger(min = 0)
         public int updateRate = 20;
 
 
@@ -152,22 +160,13 @@ public class SimpleConfigClient extends SimpleConfig {
     @ConfigEntries(includeAll = true)
     public static class HudDisplay implements ConfigGroup {
         public boolean showCount = true;
-        public VERTICAL_ANCHOR vertical_anchor = VERTICAL_ANCHOR.CENTER;
-        public HORIZONTAL_ANCHOR horizontal_anchor = HORIZONTAL_ANCHOR.CENTER;
+        public VerticalAnchor vertical_anchor = VerticalAnchor.CENTER;
+        public HorizontalAnchor horizontal_anchor = HorizontalAnchor.CENTER;
+        public SnowflakeAnchor snowflake_anchor = SnowflakeAnchor.RIGHT;
         public int x = 16;
         public int y = 0;
         public boolean showBlock = true;
+        @ConfigEntry.BoundedInteger(min = 0)
         public int blockNumberSpacing = 16;
-
-        public enum VERTICAL_ANCHOR {
-            TOP,
-            CENTER,
-            BOTTOM
-        }
-        public enum HORIZONTAL_ANCHOR {
-            LEFT,
-            CENTER,
-            RIGHT
-        }
     }
 }
